@@ -1,1818 +1,2010 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Instagram Ban Monitor</title>
+  <title>Instagram Monitor</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-    >
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  />
 
-    <style>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-        body {
-            background:
-                linear-gradient(
-                    135deg,
-                    #0f0f0f 0%,
-                    #1a1a2e 100%
-                );
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #05000b;
+      color: white;
+    }
 
-            font-family:
-                'Inter',
-                system-ui,
-                sans-serif;
-        }
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
 
-        .status-active {
-            color: #22c55e;
-            text-shadow:
-                0 0 10px #22c55e;
-        }
+    /* =========================================================
+       ANIMATED ANIME BACKGROUND
+       Put anime.jpg inside /public
+       ========================================================= */
 
-        .status-banned {
-            color: #ef4444;
-            text-shadow:
-                0 0 10px #ef4444;
-        }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -5%;
+      z-index: -3;
 
-        .monitor-card {
-            transition:
-                all .2s ease;
-        }
+      background-image: url("./anime.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
 
-        .minimized .monitor-body {
-            display: none;
-        }
+      animation: animeBackground 18s ease-in-out infinite alternate;
+      transform: scale(1.08);
+    }
 
-    </style>
+    /* Dark purple overlay */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+
+      background:
+        radial-gradient(
+          circle at 20% 20%,
+          rgba(168, 85, 247, 0.28),
+          transparent 35%
+        ),
+        radial-gradient(
+          circle at 80% 70%,
+          rgba(126, 34, 206, 0.24),
+          transparent 35%
+        ),
+        linear-gradient(
+          135deg,
+          rgba(0, 0, 0, 0.90),
+          rgba(31, 0, 54, 0.72),
+          rgba(0, 0, 0, 0.92)
+        );
+    }
+
+    @keyframes animeBackground {
+      0% {
+        transform: scale(1.08) translate3d(0, 0, 0);
+      }
+
+      50% {
+        transform: scale(1.13) translate3d(-1%, 1%, 0);
+      }
+
+      100% {
+        transform: scale(1.08) translate3d(1%, -1%, 0);
+      }
+    }
+
+    /* =========================================================
+       FLOATING PURPLE LIGHTS
+       ========================================================= */
+
+    .bg-light {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: -1;
+      filter: blur(80px);
+      opacity: 0.25;
+    }
+
+    .bg-light.one {
+      width: 250px;
+      height: 250px;
+      background: #a855f7;
+      top: 5%;
+      left: -80px;
+      animation: floatOne 10s ease-in-out infinite;
+    }
+
+    .bg-light.two {
+      width: 300px;
+      height: 300px;
+      background: #7e22ce;
+      right: -100px;
+      bottom: 10%;
+      animation: floatTwo 12s ease-in-out infinite;
+    }
+
+    .bg-light.three {
+      width: 180px;
+      height: 180px;
+      background: #c026d3;
+      left: 45%;
+      top: 40%;
+      animation: floatThree 8s ease-in-out infinite;
+    }
+
+    @keyframes floatOne {
+      0%, 100% {
+        transform: translate(0, 0);
+      }
+
+      50% {
+        transform: translate(80px, 100px);
+      }
+    }
+
+    @keyframes floatTwo {
+      0%, 100% {
+        transform: translate(0, 0);
+      }
+
+      50% {
+        transform: translate(-100px, -70px);
+      }
+    }
+
+    @keyframes floatThree {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.15;
+      }
+
+      50% {
+        transform: scale(1.5);
+        opacity: 0.30;
+      }
+    }
+
+    /* =========================================================
+       MAIN CONTAINER
+       ========================================================= */
+
+    .app-container {
+      width: min(1150px, 94%);
+      margin: 0 auto;
+      padding: 35px 0 60px;
+    }
+
+    /* =========================================================
+       HEADER
+       ========================================================= */
+
+    .main-header {
+      position: relative;
+      overflow: hidden;
+
+      background: rgba(10, 4, 18, 0.72);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+
+      border-radius: 24px;
+      padding: 25px;
+
+      box-shadow:
+        0 0 40px rgba(168, 85, 247, 0.12),
+        inset 0 0 30px rgba(168, 85, 247, 0.04);
+
+      animation: headerAppear 0.8s ease-out;
+    }
+
+    .main-header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 2px;
+
+      background: linear-gradient(
+        90deg,
+        transparent,
+        #a855f7,
+        #e879f9,
+        #a855f7,
+        transparent
+      );
+
+      animation: headerLine 4s linear infinite;
+    }
+
+    @keyframes headerLine {
+      0% {
+        left: -100%;
+      }
+
+      100% {
+        left: 100%;
+      }
+    }
+
+    @keyframes headerAppear {
+      from {
+        opacity: 0;
+        transform: translateY(-25px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .title-glow {
+      text-shadow:
+        0 0 10px rgba(168, 85, 247, 0.8),
+        0 0 25px rgba(168, 85, 247, 0.4);
+    }
+
+    /* =========================================================
+       ADD BUTTON
+       ========================================================= */
+
+    .add-btn {
+      width: 48px;
+      height: 48px;
+
+      border-radius: 15px;
+      border: 1px solid rgba(216, 180, 254, 0.45);
+
+      background: linear-gradient(
+        135deg,
+        rgba(126, 34, 206, 0.8),
+        rgba(168, 85, 247, 0.55)
+      );
+
+      color: white;
+      cursor: pointer;
+
+      box-shadow:
+        0 0 15px rgba(168, 85, 247, 0.35),
+        inset 0 0 15px rgba(255, 255, 255, 0.08);
+
+      transition: all 0.25s ease;
+    }
+
+    .add-btn:hover {
+      transform: translateY(-3px) rotate(90deg) scale(1.08);
+
+      box-shadow:
+        0 0 30px rgba(168, 85, 247, 0.65),
+        0 0 60px rgba(126, 34, 206, 0.25);
+    }
+
+    .add-btn:active {
+      transform: scale(0.94);
+    }
+
+    /* =========================================================
+       MONITOR CARD
+       ========================================================= */
+
+    .monitor-card {
+      position: relative;
+      overflow: hidden;
+
+      margin-top: 20px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(12, 5, 20, 0.88),
+          rgba(24, 5, 38, 0.78)
+        );
+
+      border: 1px solid rgba(168, 85, 247, 0.28);
+
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+
+      border-radius: 22px;
+
+      box-shadow:
+        0 10px 45px rgba(0, 0, 0, 0.35),
+        0 0 25px rgba(126, 34, 206, 0.08);
+
+      animation: cardAppear 0.5s ease-out;
+
+      transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.3s ease;
+    }
+
+    .monitor-card:hover {
+      border-color: rgba(168, 85, 247, 0.6);
+
+      box-shadow:
+        0 15px 55px rgba(0, 0, 0, 0.45),
+        0 0 35px rgba(168, 85, 247, 0.14);
+    }
+
+    @keyframes cardAppear {
+      from {
+        opacity: 0;
+        transform: translateY(25px) scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* =========================================================
+       MONITOR HEADER
+       ========================================================= */
+
+    .monitor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 18px 20px;
+
+      cursor: pointer;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(168, 85, 247, 0.08),
+          rgba(0, 0, 0, 0.05)
+        );
+
+      border-bottom: 1px solid rgba(168, 85, 247, 0.12);
+
+      transition: background 0.3s ease;
+    }
+
+    .monitor-header:hover {
+      background:
+        linear-gradient(
+          90deg,
+          rgba(168, 85, 247, 0.16),
+          rgba(0, 0, 0, 0.08)
+        );
+    }
+
+    .monitor-body {
+      padding: 20px;
+
+      max-height: 1200px;
+      opacity: 1;
+
+      transition:
+        max-height 0.45s ease,
+        opacity 0.3s ease,
+        padding 0.45s ease;
+    }
+
+    .monitor-card.minimized .monitor-body {
+      max-height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    .monitor-card.minimized .chevron {
+      transform: rotate(-90deg);
+    }
+
+    .chevron {
+      transition: transform 0.35s ease;
+    }
+
+    /* =========================================================
+       INPUTS
+       ========================================================= */
+
+    .username-input {
+      width: 100%;
+
+      background: rgba(0, 0, 0, 0.55);
+
+      border: 1px solid rgba(168, 85, 247, 0.28);
+
+      color: white;
+
+      border-radius: 13px;
+
+      padding: 13px 15px;
+
+      outline: none;
+
+      transition: all 0.25s ease;
+    }
+
+    .username-input::placeholder {
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    .username-input:focus {
+      border-color: #a855f7;
+
+      box-shadow:
+        0 0 0 3px rgba(168, 85, 247, 0.10),
+        0 0 25px rgba(168, 85, 247, 0.18);
+
+      background: rgba(10, 0, 18, 0.75);
+    }
+
+    /* =========================================================
+       BUTTONS
+       ========================================================= */
+
+    .purple-btn {
+      position: relative;
+      overflow: hidden;
+
+      border: 1px solid rgba(216, 180, 254, 0.25);
+
+      background:
+        linear-gradient(
+          135deg,
+          #7e22ce,
+          #a855f7
+        );
+
+      color: white;
+
+      border-radius: 13px;
+
+      padding: 12px 18px;
+
+      font-weight: 700;
+
+      cursor: pointer;
+
+      transition: all 0.25s ease;
+
+      box-shadow:
+        0 5px 20px rgba(126, 34, 206, 0.25);
+    }
+
+    .purple-btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 80%;
+      height: 100%;
+
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.22),
+        transparent
+      );
+
+      transform: skewX(-20deg);
+
+      transition: left 0.5s ease;
+    }
+
+    .purple-btn:hover::before {
+      left: 140%;
+    }
+
+    .purple-btn:hover {
+      transform: translateY(-2px);
+
+      box-shadow:
+        0 8px 30px rgba(168, 85, 247, 0.42),
+        0 0 20px rgba(168, 85, 247, 0.15);
+    }
+
+    .purple-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* =========================================================
+       STATUS BADGES
+       ========================================================= */
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+
+      padding: 6px 10px;
+
+      border-radius: 999px;
+
+      font-size: 12px;
+      font-weight: 700;
+
+      border: 1px solid rgba(255, 255, 255, 0.1);
+
+      transition: all 0.3s ease;
+    }
+
+    .status-active {
+      color: #86efac;
+      background: rgba(34, 197, 94, 0.10);
+      border-color: rgba(34, 197, 94, 0.25);
+
+      box-shadow: 0 0 15px rgba(34, 197, 94, 0.08);
+    }
+
+    .status-banned {
+      color: #fca5a5;
+      background: rgba(239, 68, 68, 0.10);
+      border-color: rgba(239, 68, 68, 0.25);
+
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.08);
+    }
+
+    .status-unknown {
+      color: #d8b4fe;
+      background: rgba(168, 85, 247, 0.10);
+      border-color: rgba(168, 85, 247, 0.25);
+    }
+
+    /* =========================================================
+       PROFILE IMAGE
+       ========================================================= */
+
+    .profile-image {
+      width: 100px;
+      height: 100px;
+
+      object-fit: cover;
+
+      border-radius: 50%;
+
+      border: 3px solid rgba(168, 85, 247, 0.65);
+
+      box-shadow:
+        0 0 20px rgba(168, 85, 247, 0.25),
+        0 0 45px rgba(126, 34, 206, 0.10);
+
+      animation: profileGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes profileGlow {
+      0%, 100% {
+        box-shadow:
+          0 0 20px rgba(168, 85, 247, 0.25),
+          0 0 45px rgba(126, 34, 206, 0.10);
+      }
+
+      50% {
+        box-shadow:
+          0 0 28px rgba(168, 85, 247, 0.55),
+          0 0 60px rgba(126, 34, 206, 0.18);
+      }
+    }
+
+    /* =========================================================
+       STAT BOX
+       ========================================================= */
+
+    .stat-box {
+      background: rgba(0, 0, 0, 0.30);
+
+      border: 1px solid rgba(168, 85, 247, 0.15);
+
+      border-radius: 15px;
+
+      padding: 15px;
+
+      transition: all 0.25s ease;
+    }
+
+    .stat-box:hover {
+      transform: translateY(-3px);
+
+      border-color: rgba(168, 85, 247, 0.40);
+
+      background: rgba(168, 85, 247, 0.08);
+
+      box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.25),
+        0 0 20px rgba(168, 85, 247, 0.08);
+    }
+
+    /* =========================================================
+       TIMER
+       ========================================================= */
+
+    .timer {
+      font-family: monospace;
+
+      color: #d8b4fe;
+
+      text-shadow:
+        0 0 10px rgba(168, 85, 247, 0.35);
+    }
+
+    /* =========================================================
+       DELETE BUTTON
+       ========================================================= */
+
+    .delete-btn {
+      width: 35px;
+      height: 35px;
+
+      border-radius: 10px;
+
+      border: 1px solid rgba(239, 68, 68, 0.15);
+
+      background: rgba(239, 68, 68, 0.08);
+
+      color: #fca5a5;
+
+      cursor: pointer;
+
+      transition: all 0.25s ease;
+    }
+
+    .delete-btn:hover {
+      background: rgba(239, 68, 68, 0.18);
+
+      border-color: rgba(239, 68, 68, 0.35);
+
+      transform: scale(1.08) rotate(5deg);
+
+      box-shadow:
+        0 0 20px rgba(239, 68, 68, 0.12);
+    }
+
+    /* =========================================================
+       MONITORING PULSE
+       ========================================================= */
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+
+      border-radius: 50%;
+
+      background: #a855f7;
+
+      box-shadow:
+        0 0 0 0 rgba(168, 85, 247, 0.65);
+
+      animation: pulsePurple 1.8s infinite;
+    }
+
+    @keyframes pulsePurple {
+      0% {
+        box-shadow:
+          0 0 0 0 rgba(168, 85, 247, 0.65);
+      }
+
+      70% {
+        box-shadow:
+          0 0 0 10px rgba(168, 85, 247, 0);
+      }
+
+      100% {
+        box-shadow:
+          0 0 0 0 rgba(168, 85, 247, 0);
+      }
+    }
+
+    /* =========================================================
+       SCROLLBAR
+       ========================================================= */
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #05000b;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(
+        #7e22ce,
+        #a855f7
+      );
+
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #c084fc;
+    }
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @media (max-width: 640px) {
+      .app-container {
+        width: 94%;
+        padding-top: 18px;
+      }
+
+      .main-header {
+        padding: 18px;
+        border-radius: 18px;
+      }
+
+      .monitor-card {
+        border-radius: 18px;
+      }
+
+      .monitor-header {
+        padding: 15px;
+      }
+
+      .monitor-body {
+        padding: 15px;
+      }
+
+      .profile-image {
+        width: 80px;
+        height: 80px;
+      }
+    }
+  </style>
 </head>
 
+<body>
 
-<body class="min-h-screen text-white">
+  <!-- Floating background lights -->
+  <div class="bg-light one"></div>
+  <div class="bg-light two"></div>
+  <div class="bg-light three"></div>
 
-<div class="max-w-3xl mx-auto p-6">
+  <div class="app-container">
 
-
-    <!-- ==================================================
+    <!-- =====================================================
          HEADER
-    ================================================== -->
+         ====================================================== -->
 
-    <div class="text-center mb-10">
+    <div class="main-header">
 
-        <h1 class="text-4xl font-bold tracking-tight">
+      <div class="flex items-center justify-between gap-4">
 
-            <i class="fas fa-eye text-yellow-400"></i>
+        <div>
+          <div class="flex items-center gap-3">
 
-            Instagram Ban Monitor
-
-        </h1>
-
-        <p class="text-zinc-400 mt-2">
-            Real-time ban / unban detection
-        </p>
-
-    </div>
-
-
-
-    <!-- ==================================================
-         MONITOR HEADER
-    ================================================== -->
-
-    <div
-        class="bg-zinc-900
-               border border-zinc-700
-               rounded-3xl
-               p-6
-               mb-8"
-    >
-
-        <div class="flex items-center justify-between">
-
-            <div>
-
-                <div
-                    class="text-sm
-                           text-zinc-400"
-                >
-                    MONITORS
-                </div>
-
-                <div
-                    id="monitor-count"
-                    class="text-2xl font-bold"
-                >
-                    0
-                </div>
-
+            <div
+              class="w-12 h-12 rounded-2xl flex items-center justify-center"
+              style="
+                background: linear-gradient(
+                  135deg,
+                  rgba(126,34,206,.9),
+                  rgba(168,85,247,.7)
+                );
+                box-shadow: 0 0 25px rgba(168,85,247,.3);
+              "
+            >
+              <i class="fa-brands fa-instagram text-2xl"></i>
             </div>
 
+            <div>
+              <h1
+                class="text-2xl sm:text-3xl font-black title-glow"
+              >
+                Instagram Monitor
+              </h1>
 
-            <!-- PLUS BUTTON -->
+              <div
+                class="flex items-center gap-2 mt-1 text-sm text-purple-200/70"
+              >
+                <span class="pulse-dot"></span>
 
-            <button
-                onclick="addMonitor()"
-                class="
-                    w-12
-                    h-12
-                    rounded-2xl
-                    bg-yellow-500
-                    hover:bg-yellow-400
-                    text-black
-                    text-2xl
-                    font-bold
-                "
-            >
-                +
-            </button>
+                <span>
+                  <span id="monitor-count">0</span>
+                  active monitors
+                </span>
+              </div>
+            </div>
 
+          </div>
         </div>
+
+        <button
+          id="add-monitor-btn"
+          class="add-btn"
+          title="Add Monitor"
+        >
+          <i class="fa-solid fa-plus text-lg"></i>
+        </button>
+
+      </div>
 
     </div>
 
-
-
-    <!-- ==================================================
+    <!-- =====================================================
          MONITOR LIST
-    ================================================== -->
+         ====================================================== -->
 
     <div id="monitor-list"></div>
 
+  </div>
 
 
-    <!-- ==================================================
-         LIVE LOG
-    ================================================== -->
+  <script>
 
-    <div
-        class="
-            bg-zinc-900
-            border border-zinc-700
-            rounded-3xl
-            p-6
-        "
-    >
+    /* =========================================================
+       ORIGINAL MONITOR LOGIC
+       ========================================================= */
 
-        <h3
-            class="
-                text-sm
-                font-semibold
-                text-yellow-400
-                mb-3
-            "
-        >
-            LIVE MONITOR LOG
-        </h3>
+    const monitors = new Map();
 
+    let monitorCounter = 0;
 
-        <div
-            id="log"
-            class="
-                h-48
-                overflow-y-auto
-                font-mono
-                text-sm
-                space-y-1
-            "
-        ></div>
 
-    </div>
+    function addLog(message) {
+      console.log(message);
+    }
 
-</div>
 
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
 
 
-<script>
+    function formatElapsed(seconds) {
 
+      seconds = Math.max(0, Number(seconds) || 0);
 
-// ======================================================
-// GLOBAL DATA
-// ======================================================
+      const h = Math.floor(seconds / 3600);
 
-let monitors = new Map();
+      const m = Math.floor((seconds % 3600) / 60);
 
-let monitorCounter = 0;
+      const s = seconds % 60;
 
+      return [
+        String(h).padStart(2, "0"),
+        String(m).padStart(2, "0"),
+        String(s).padStart(2, "0")
+      ].join(":");
+    }
 
 
-// ======================================================
-// LOG
-// ======================================================
+    function renderMonitorCard(id, data = {}) {
 
-function addLog(
-    msg,
-    type = "normal"
-) {
+      const username = data.username || "";
 
-    const log =
-        document.getElementById(
-            'log'
-        );
+      const card = document.createElement("div");
 
+      card.className = "monitor-card";
 
-    const time =
-        new Date().toLocaleTimeString(
-            'en-US',
-            {
-                hour12: false
-            }
-        );
+      card.id = `monitor-${id}`;
 
+      card.dataset.id = id;
 
-    const color =
-        type === "banned"
-            ? "text-red-400"
-            : type === "active"
-                ? "text-emerald-400"
-                : "text-zinc-300";
+      card.innerHTML = `
 
+        <div class="monitor-header">
 
-    log.innerHTML =
+          <div class="flex items-center gap-3 min-w-0">
 
-        `<div class="${color}">
-            [${time}] ${msg}
-        </div>`
+            <div
+              class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+              style="
+                background: rgba(168,85,247,.12);
+                border: 1px solid rgba(168,85,247,.25);
+              "
+            >
+              <i class="fa-brands fa-instagram text-purple-400"></i>
+            </div>
 
-        +
+            <div class="min-w-0">
 
-        log.innerHTML;
+              <div class="flex items-center gap-2">
 
-}
-
-
-
-// ======================================================
-// ESCAPE HTML
-// ======================================================
-
-function escapeHtml(value) {
-
-    return String(
-        value ?? ''
-    ).replace(
-        /[&<>"']/g,
-        c => ({
-
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-
-        }[c])
-    );
-
-}
-
-
-
-// ======================================================
-// FORMAT TIMER
-// ======================================================
-
-function formatElapsed(seconds) {
-
-    seconds =
-        Math.max(
-            0,
-            Math.floor(
-                seconds || 0
-            )
-        );
-
-
-    const hours =
-        String(
-            Math.floor(
-                seconds / 3600
-            )
-        ).padStart(
-            2,
-            '0'
-        );
-
-
-    const minutes =
-        String(
-            Math.floor(
-                (seconds % 3600) / 60
-            )
-        ).padStart(
-            2,
-            '0'
-        );
-
-
-    const secs =
-        String(
-            seconds % 60
-        ).padStart(
-            2,
-            '0'
-        );
-
-
-    return `${hours}:${minutes}:${secs}`;
-
-}
-
-
-
-// ======================================================
-// RENDER MONITOR
-// ======================================================
-
-function renderMonitorCard(
-    monitor,
-    minimized = false
-) {
-
-    const list =
-        document.getElementById(
-            'monitor-list'
-        );
-
-
-    const card =
-        document.createElement(
-            'div'
-        );
-
-
-    card.id =
-        `monitor-${monitor.id}`;
-
-
-    card.className =
-
-        `monitor-card
-         bg-zinc-900
-         border border-zinc-700
-         rounded-3xl
-         p-6
-         mb-6
-         ${minimized ? 'minimized' : ''}`;
-
-
-    card.innerHTML = `
-
-        <!-- ==========================================
-             CARD HEADER
-        =========================================== -->
-
-        <div
-            class="
-                flex
-                items-center
-                justify-between
-                cursor-pointer
-            "
-
-            onclick="
-                toggleMinimize('${monitor.id}')
-            "
-        >
-
-            <div>
-
-                <div
-                    class="
-                        text-xs
-                        text-zinc-500
-                    "
+                <h2
+                  class="font-bold text-white truncate monitor-title"
                 >
-                    MONITOR
-                </div>
+                  @${escapeHtml(username || "new monitor")}
+                </h2>
 
-
-                <div
-                    class="
-                        font-bold
-                        text-lg
-                    "
+                <span
+                  class="status-badge status-unknown header-status"
                 >
+                  <span>UNKNOWN</span>
+                </span>
 
-                    @<span
-                        id="mini-user-${monitor.id}"
-                    >
-                        ${escapeHtml(
-                            monitor.username ||
-                            'new'
-                        )}
-                    </span>
+              </div>
 
-                </div>
+              <div class="flex items-center gap-3 mt-1">
+
+                <span
+                  class="timer text-xs"
+                >
+                  00:00:00
+                </span>
+
+                <span
+                  class="text-xs text-gray-500"
+                >
+                  monitoring time
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="flex items-center gap-2 shrink-0">
+
+            <button
+              class="delete-btn"
+              onclick="event.stopPropagation(); removeMonitor(${id})"
+              title="Delete"
+            >
+              <i class="fa-solid fa-trash text-xs"></i>
+            </button>
+
+            <i
+              class="fa-solid fa-chevron-down chevron text-purple-300/60"
+            ></i>
+
+          </div>
+
+        </div>
+
+
+        <div class="monitor-body">
+
+          <!-- Search -->
+
+          <div class="flex flex-col sm:flex-row gap-3">
+
+            <input
+              type="text"
+              class="username-input username-input-field"
+              placeholder="Enter Instagram username"
+              value="${escapeHtml(username)}"
+            />
+
+            <button
+              class="purple-btn check-btn sm:w-32"
+            >
+              <i class="fa-solid fa-magnifying-glass mr-2"></i>
+              CHECK
+            </button>
+
+          </div>
+
+
+          <!-- Profile -->
+
+          <div class="profile-section hidden mt-6">
+
+            <div
+              class="flex flex-col sm:flex-row items-center sm:items-start gap-5"
+            >
+
+              <img
+                class="profile-image profile-pic"
+                src=""
+                alt="Profile"
+              />
+
+              <div class="flex-1 text-center sm:text-left">
+
+                <h3
+                  class="text-xl font-bold profile-name"
+                >
+                  -
+                </h3>
+
+                <p
+                  class="text-purple-300 text-sm profile-username"
+                >
+                  -
+                </p>
+
+                <p
+                  class="text-gray-400 text-sm mt-2 profile-bio"
+                >
+                  -
+                </p>
+
+              </div>
 
             </div>
 
 
-
             <div
-                class="
-                    flex
-                    items-center
-                    gap-3
-                "
+              class="grid grid-cols-3 gap-3 mt-6"
             >
 
-                <span
-                    id="mini-status-${monitor.id}"
-                    class="
-                        text-sm
-                        font-bold
-                    "
+              <div class="stat-box text-center">
+
+                <div
+                  class="text-lg font-bold profile-followers"
                 >
-                    —
-                </span>
+                  0
+                </div>
+
+                <div
+                  class="text-xs text-gray-500"
+                >
+                  Followers
+                </div>
+
+              </div>
 
 
-                <span
-                    id="mini-time-${monitor.id}"
-                    class="
-                        font-mono
-                        text-xs
-                        text-zinc-400
-                    "
+              <div class="stat-box text-center">
+
+                <div
+                  class="text-lg font-bold profile-following"
                 >
+                  0
+                </div>
+
+                <div
+                  class="text-xs text-gray-500"
+                >
+                  Following
+                </div>
+
+              </div>
+
+
+              <div class="stat-box text-center">
+
+                <div
+                  class="text-lg font-bold profile-posts"
+                >
+                  0
+                </div>
+
+                <div
+                  class="text-xs text-gray-500"
+                >
+                  Posts
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- Status -->
+
+          <div class="mt-6">
+
+            <div
+              class="flex items-center justify-between"
+            >
+
+              <span
+                class="text-sm text-gray-400"
+              >
+                Current Status
+              </span>
+
+              <span
+                class="status-badge status-unknown body-status"
+              >
+                UNKNOWN
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <!-- Monitoring -->
+
+          <div
+            class="mt-4 p-4 rounded-xl"
+            style="
+              background: rgba(168,85,247,.045);
+              border: 1px solid rgba(168,85,247,.10);
+            "
+          >
+
+            <div
+              class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+            >
+
+              <div>
+
+                <div
+                  class="text-sm font-semibold text-purple-200"
+                >
+                  Monitoring
+                </div>
+
+                <div
+                  class="text-xs text-gray-500 mt-1"
+                >
+                  Time:
+                  <span class="monitoring-time timer">
                     00:00:00
-                </span>
-
-
-                <!-- DELETE -->
-
-                <button
-                    onclick="
-                        event.stopPropagation();
-                        removeMonitor('${monitor.id}')
-                    "
-
-                    class="
-                        w-9
-                        h-9
-                        rounded-xl
-                        bg-zinc-800
-                        hover:bg-red-600
-                        text-zinc-300
-                    "
-                >
-
-                    <i class="fas fa-trash"></i>
-
-                </button>
-
-
-                <i
-                    id="chevron-${monitor.id}"
-                    class="
-                        fas
-                        fa-chevron-down
-                        text-zinc-500
-                    "
-                ></i>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- ==========================================
-             MONITOR BODY
-        =========================================== -->
-
-        <div
-            class="
-                monitor-body
-                mt-6
-            "
-        >
-
-
-            <!-- USERNAME -->
-
-            <div
-                class="
-                    flex
-                    gap-3
-                "
-            >
-
-                <input
-                    id="input-${monitor.id}"
-
-                    type="text"
-
-                    placeholder="@username"
-
-                    value="${escapeHtml(
-                        monitor.username || ''
-                    )}"
-
-                    class="
-                        flex-1
-                        bg-black
-                        border
-                        border-zinc-700
-                        focus:border-yellow-500
-                        rounded-2xl
-                        px-5
-                        py-3
-                        outline-none
-                    "
-                >
-
-
-                <button
-                    onclick="
-                        fetchProfile('${monitor.id}')
-                    "
-
-                    class="
-                        px-6
-                        bg-yellow-500
-                        hover:bg-yellow-600
-                        text-black
-                        rounded-2xl
-                        font-bold
-                    "
-                >
-                    CHECK
-                </button>
-
-            </div>
-
-
-
-            <!-- ======================================
-                 PROFILE
-            ======================================= -->
-
-            <div
-                id="profile-${monitor.id}"
-                class="
-                    ${monitor.username
-                        ? ''
-                        : 'hidden'}
-                    mt-6
-                "
-            >
-
-                <div
-                    class="
-                        flex
-                        gap-5
-                        items-start
-                    "
-                >
-
-
-                    <!-- PROFILE PIC -->
-
-                    <img
-                        id="pfp-${monitor.id}"
-
-                        src=""
-
-                        class="
-                            w-24
-                            h-24
-                            rounded-2xl
-                            object-cover
-                            border-4
-                            border-yellow-500
-                        "
-
-                        onerror="
-                            this.src='https://via.placeholder.com/150?text=No+Image'
-                        "
-                    >
-
-
-
-                    <div
-                        class="flex-1"
-                    >
-
-                        <h2
-                            id="fullname-${monitor.id}"
-                            class="
-                                text-xl
-                                font-bold
-                            "
-                        ></h2>
-
-
-                        <p
-                            id="user-${monitor.id}"
-                            class="
-                                text-yellow-400
-                            "
-                        ></p>
-
-
-                        <p
-                            id="bio-${monitor.id}"
-                            class="
-                                text-zinc-400
-                                text-sm
-                                mt-2
-                                whitespace-pre-wrap
-                            "
-                        ></p>
-
-
-
-                        <!-- STATS -->
-
-                        <div
-                            class="
-                                grid
-                                grid-cols-3
-                                gap-3
-                                mt-4
-                                text-center
-                            "
-                        >
-
-                            <div
-                                class="
-                                    bg-black
-                                    rounded-xl
-                                    p-2
-                                "
-                            >
-
-                                <div
-                                    id="followers-${monitor.id}"
-                                    class="
-                                        font-bold
-                                        text-emerald-400
-                                    "
-                                >
-                                    —
-                                </div>
-
-                                <div
-                                    class="
-                                        text-xs
-                                        text-zinc-500
-                                    "
-                                >
-                                    Followers
-                                </div>
-
-                            </div>
-
-
-
-                            <div
-                                class="
-                                    bg-black
-                                    rounded-xl
-                                    p-2
-                                "
-                            >
-
-                                <div
-                                    id="following-${monitor.id}"
-                                    class="
-                                        font-bold
-                                        text-emerald-400
-                                    "
-                                >
-                                    —
-                                </div>
-
-                                <div
-                                    class="
-                                        text-xs
-                                        text-zinc-500
-                                    "
-                                >
-                                    Following
-                                </div>
-
-                            </div>
-
-
-
-                            <div
-                                class="
-                                    bg-black
-                                    rounded-xl
-                                    p-2
-                                "
-                            >
-
-                                <div
-                                    id="posts-${monitor.id}"
-                                    class="
-                                        font-bold
-                                        text-emerald-400
-                                    "
-                                >
-                                    —
-                                </div>
-
-                                <div
-                                    class="
-                                        text-xs
-                                        text-zinc-500
-                                    "
-                                >
-                                    Posts
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
+                  </span>
                 </div>
 
+              </div>
 
 
-                <!-- ==================================
-                     STATUS / TIMER / BUTTON
-                =================================== -->
-
-                <div
-                    class="
-                        mt-6
-                        flex
-                        items-center
-                        justify-between
-                        gap-4
-                    "
-                >
-
-                    <!-- STATUS -->
-
-                    <div>
-
-                        <div
-                            class="
-                                text-xs
-                                text-zinc-500
-                            "
-                        >
-                            CURRENT STATUS
-                        </div>
-
-
-                        <div
-                            id="status-${monitor.id}"
-                            class="
-                                text-3xl
-                                font-bold
-                                mt-1
-                            "
-                        >
-                            —
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- TIMER -->
-
-                    <div
-                        class="text-right"
-                    >
-
-                        <div
-                            class="
-                                text-xs
-                                text-zinc-500
-                            "
-                        >
-                            MONITORING TIME
-                        </div>
-
-
-                        <div
-                            id="time-${monitor.id}"
-                            class="
-                                font-mono
-                                text-lg
-                                text-yellow-400
-                            "
-                        >
-                            00:00:00
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- BUTTON -->
-
-                    <button
-                        id="btn-${monitor.id}"
-
-                        onclick="
-                            toggleMonitor('${monitor.id}')
-                        "
-
-                        class="
-                            px-7
-                            py-3
-                            bg-gradient-to-r
-                            from-yellow-400
-                            to-amber-500
-                            text-black
-                            rounded-2xl
-                            font-bold
-                        "
-                    >
-                        START MONITOR
-                    </button>
-
-                </div>
+              <button
+                class="purple-btn monitor-toggle-btn"
+              >
+                <i class="fa-solid fa-play mr-2"></i>
+                START MONITOR
+              </button>
 
             </div>
 
+          </div>
+
         </div>
-    `;
+      `;
 
 
-    list.prepend(
-        card
-    );
-
-}
+      document
+        .getElementById("monitor-list")
+        .appendChild(card);
 
 
+      /* Header toggle */
 
-// ======================================================
-// MINIMIZE / EXPAND
-// ======================================================
-
-function toggleMinimize(id) {
-
-    const card =
-        document.getElementById(
-            `monitor-${id}`
-        );
+      card
+        .querySelector(".monitor-header")
+        .addEventListener("click", () => {
+          toggleMinimize(id);
+        });
 
 
-    if (!card) return;
+      /* Check */
+
+      card
+        .querySelector(".check-btn")
+        .addEventListener("click", () => {
+          fetchProfile(id);
+        });
 
 
-    card.classList.toggle(
-        'minimized'
-    );
+      /* Enter key */
 
+      card
+        .querySelector(".username-input-field")
+        .addEventListener("keydown", (event) => {
 
-    const icon =
-        document.getElementById(
-            `chevron-${id}`
-        );
-
-
-    icon.className =
-        card.classList.contains(
-            'minimized'
-        )
-
-            ? 'fas fa-chevron-right text-zinc-500'
-
-            : 'fas fa-chevron-down text-zinc-500';
-
-}
-
-
-
-// ======================================================
-// MINIMIZE OTHER CARDS
-// ======================================================
-
-function minimizeOthers(
-    exceptId
-) {
-
-    document
-        .querySelectorAll(
-            '.monitor-card'
-        )
-        .forEach(card => {
-
-            if (
-                card.id !==
-                `monitor-${exceptId}`
-            ) {
-
-                card.classList.add(
-                    'minimized'
-                );
-
-
-                const id =
-                    card.id.replace(
-                        'monitor-',
-                        ''
-                    );
-
-
-                const icon =
-                    document.getElementById(
-                        `chevron-${id}`
-                    );
-
-
-                if (icon) {
-
-                    icon.className =
-                        'fas fa-chevron-right text-zinc-500';
-
-                }
-
-            }
+          if (event.key === "Enter") {
+            fetchProfile(id);
+          }
 
         });
 
-}
+
+      /* Start / stop */
+
+      card
+        .querySelector(".monitor-toggle-btn")
+        .addEventListener("click", (event) => {
+
+          event.stopPropagation();
+
+          toggleMonitor(id);
+
+        });
 
 
-
-// ======================================================
-// ADD MONITOR
-// ======================================================
-
-function addMonitor() {
-
-    const id =
-        `m${++monitorCounter}`;
-
-
-    const monitor = {
+      monitors.set(id, {
 
         id,
 
-        username: '',
+        username,
 
-        monitoring: false,
+        startedAt:
+          data.startedAt || null,
 
-        startedAt: null
+        monitoring:
+          data.monitoring || false,
 
-    };
+        lastStatus:
+          data.lastStatus || "UNKNOWN",
+
+        elapsedSeconds:
+          data.elapsedSeconds || 0
+
+      });
 
 
-    monitors.set(
+      setStatus(
         id,
-        monitor
-    );
+        data.lastStatus || "UNKNOWN"
+      );
+
+      updateCount();
+
+      return card;
+
+    }
 
 
-    renderMonitorCard(
-        monitor,
-        false
-    );
+    function toggleMinimize(id) {
+
+      const card =
+        document.getElementById(`monitor-${id}`);
+
+      if (!card) return;
+
+      card.classList.toggle("minimized");
+
+    }
 
 
-    // Previous monitor minimize
+    function minimizeOthers(currentId) {
 
-    minimizeOthers(id);
+      monitors.forEach((monitor, id) => {
 
+        if (id === currentId) return;
 
-    document
-        .getElementById(
-            `input-${id}`
-        )
-        .focus();
+        const card =
+          document.getElementById(`monitor-${id}`);
 
+        if (card) {
+          card.classList.add("minimized");
+        }
 
-    updateCount();
+      });
 
-}
-
-
-
-// ======================================================
-// UPDATE COUNT
-// ======================================================
-
-function updateCount() {
-
-    document
-        .getElementById(
-            'monitor-count'
-        )
-        .textContent =
-            monitors.size;
-
-}
+    }
 
 
+    function addMonitor(data = {}) {
 
-// ======================================================
-// REMOVE MONITOR
-// ======================================================
+      monitorCounter++;
 
-async function removeMonitor(
-    id
-) {
+      const id = monitorCounter;
 
-    const monitor =
-        monitors.get(id);
+      minimizeOthers(id);
+
+      const card =
+        renderMonitorCard(id, data);
+
+      card.classList.remove("minimized");
+
+      const input =
+        card.querySelector(".username-input-field");
+
+      if (!data.username) {
+        setTimeout(() => input.focus(), 100);
+      }
+
+      updateCount();
+
+      return id;
+
+    }
 
 
-    if (
-        monitor &&
-        monitor.monitoring &&
-        monitor.username
-    ) {
+    function updateCount() {
+
+      let count = 0;
+
+      monitors.forEach((monitor) => {
+
+        if (monitor.monitoring) {
+          count++;
+        }
+
+      });
+
+      const element =
+        document.getElementById("monitor-count");
+
+      if (element) {
+        element.textContent = count;
+      }
+
+    }
+
+
+    async function removeMonitor(id) {
+
+      const monitor = monitors.get(id);
+
+      if (!monitor) return;
+
+      if (monitor.monitoring && monitor.username) {
 
         try {
 
-            await fetch(
-                '/api/monitor/stop',
-                {
+          await fetch("/api/monitor/stop", {
 
-                    method: 'POST',
+            method: "POST",
 
-                    headers: {
-                        'Content-Type':
-                            'application/json'
-                    },
+            headers: {
+              "Content-Type": "application/json"
+            },
 
-                    body:
-                        JSON.stringify({
-                            username:
-                                monitor.username
-                        })
+            body: JSON.stringify({
+              username: monitor.username
+            })
 
-                }
-            );
+          });
 
-        } catch (e) {}
+        } catch (error) {
 
-    }
+          console.error(error);
+
+        }
+
+      }
 
 
-    monitors.delete(id);
+      monitors.delete(id);
 
+      const card =
+        document.getElementById(`monitor-${id}`);
 
-    const card =
-        document.getElementById(
-            `monitor-${id}`
-        );
+      if (card) {
 
+        card.style.opacity = "0";
+        card.style.transform =
+          "translateY(20px) scale(.95)";
 
-    if (card) {
+        setTimeout(() => {
 
-        card.remove();
+          card.remove();
 
-    }
+          updateCount();
 
+        }, 250);
 
-    updateCount();
+      } else {
 
-}
+        updateCount();
 
-
-
-// ======================================================
-// FETCH PROFILE
-// ======================================================
-
-async function fetchProfile(
-    id
-) {
-
-    const monitor =
-        monitors.get(id);
-
-
-    const input =
-        document.getElementById(
-            `input-${id}`
-        );
-
-
-    const username =
-        input.value
-            .trim()
-            .replace('@', '')
-            .toLowerCase();
-
-
-    if (!username) {
-
-        return alert(
-            'Enter username'
-        );
+      }
 
     }
 
 
-    monitor.username =
-        username;
+    async function fetchProfile(id) {
+
+      const monitor = monitors.get(id);
+
+      const card =
+        document.getElementById(`monitor-${id}`);
+
+      if (!monitor || !card) return;
 
 
-    document
-        .getElementById(
-            `mini-user-${id}`
-        )
-        .textContent =
-            username;
+      const input =
+        card.querySelector(".username-input-field");
+
+      const username =
+        input.value.trim().replace(/^@/, "");
 
 
-    document
-        .getElementById(
-            `profile-${id}`
-        )
-        .classList
-        .remove(
-            'hidden'
-        );
+      if (!username) {
+
+        alert("Enter Instagram username");
+
+        return;
+
+      }
 
 
-    addLog(
-        `Fetching profile for @${username}...`
-    );
+      monitor.username = username;
 
 
-    try {
+      card.querySelector(".monitor-title")
+        .textContent = `@${username}`;
 
-        const res =
-            await fetch(
-                '/api/check',
-                {
 
-                    method: 'POST',
+      const button =
+        card.querySelector(".check-btn");
 
-                    headers: {
-                        'Content-Type':
-                            'application/json'
-                    },
+      const originalHTML =
+        button.innerHTML;
 
-                    body:
-                        JSON.stringify({
-                            username
-                        })
+      button.innerHTML =
+        `<i class="fa-solid fa-spinner fa-spin mr-2"></i>CHECKING`;
 
-                }
-            );
+      button.disabled = true;
+
+
+      try {
+
+        const response =
+          await fetch("/api/check", {
+
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+              username
+            })
+
+          });
 
 
         const data =
-            await res.json();
+          await response.json();
 
 
-        if (
-            data.exists &&
-            data.user
-        ) {
+        if (data) {
 
-            document
-                .getElementById(
-                    `pfp-${id}`
-                )
-                .src =
-                    data.user.profile_pic ||
-                    '';
+          const profileSection =
+            card.querySelector(".profile-section");
 
+          if (data.profile_pic) {
 
-            document
-                .getElementById(
-                    `fullname-${id}`
-                )
-                .textContent =
-                    data.user.full_name ||
-                    data.user.username;
+            const image =
+              card.querySelector(".profile-pic");
+
+            image.src =
+              data.profile_pic;
+
+            profileSection.classList.remove("hidden");
+
+          }
 
 
-            document
-                .getElementById(
-                    `user-${id}`
-                )
-                .textContent =
-                    `@${data.user.username}`;
+          card.querySelector(".profile-name")
+            .textContent =
+            data.full_name || "-";
 
 
-            document
-                .getElementById(
-                    `bio-${id}`
-                )
-                .textContent =
-                    data.user.biography ||
-                    'No bio';
+          card.querySelector(".profile-username")
+            .textContent =
+            data.username
+              ? `@${data.username}`
+              : `@${username}`;
 
 
-            document
-                .getElementById(
-                    `followers-${id}`
-                )
-                .textContent =
-                    data.user.followers;
+          card.querySelector(".profile-bio")
+            .textContent =
+            data.bio || "-";
 
 
-            document
-                .getElementById(
-                    `following-${id}`
-                )
-                .textContent =
-                    data.user.following;
+          card.querySelector(".profile-followers")
+            .textContent =
+            data.followers ?? 0;
 
 
-            document
-                .getElementById(
-                    `posts-${id}`
-                )
-                .textContent =
-                    data.user.posts;
+          card.querySelector(".profile-following")
+            .textContent =
+            data.following ?? 0;
 
 
-            setStatus(
-                id,
-                'ACTIVE'
-            );
+          card.querySelector(".profile-posts")
+            .textContent =
+            data.posts ?? 0;
 
+
+          setStatus(
+            id,
+            data.status ||
+            (data.exists ? "ACTIVE" : "BANNED")
+          );
+
+        }
+
+      } catch (error) {
+
+        console.error(error);
+
+        setStatus(id, "UNKNOWN");
+
+      } finally {
+
+        button.innerHTML = originalHTML;
+
+        button.disabled = false;
+
+      }
+
+    }
+
+
+    function setStatus(id, status) {
+
+      const monitor = monitors.get(id);
+
+      const card =
+        document.getElementById(`monitor-${id}`);
+
+      if (!monitor || !card) return;
+
+
+      status =
+        String(status || "UNKNOWN").toUpperCase();
+
+
+      monitor.lastStatus = status;
+
+
+      const badges =
+        card.querySelectorAll(
+          ".header-status, .body-status"
+        );
+
+
+      badges.forEach((badge) => {
+
+        badge.classList.remove(
+          "status-active",
+          "status-banned",
+          "status-unknown"
+        );
+
+
+        if (status === "ACTIVE") {
+
+          badge.classList.add(
+            "status-active"
+          );
+
+        } else if (status === "BANNED") {
+
+          badge.classList.add(
+            "status-banned"
+          );
 
         } else {
 
-            document
-                .getElementById(
-                    `pfp-${id}`
-                )
-                .src = '';
-
-
-            document
-                .getElementById(
-                    `fullname-${id}`
-                )
-                .textContent =
-                    username;
-
-
-            document
-                .getElementById(
-                    `user-${id}`
-                )
-                .textContent =
-                    `@${username}`;
-
-
-            document
-                .getElementById(
-                    `bio-${id}`
-                )
-                .textContent =
-                    'Account not found or banned';
-
-
-            document
-                .getElementById(
-                    `followers-${id}`
-                )
-                .textContent =
-                    '—';
-
-
-            document
-                .getElementById(
-                    `following-${id}`
-                )
-                .textContent =
-                    '—';
-
-
-            document
-                .getElementById(
-                    `posts-${id}`
-                )
-                .textContent =
-                    '—';
-
-
-            setStatus(
-                id,
-                'BANNED'
-            );
+          badge.classList.add(
+            "status-unknown"
+          );
 
         }
 
 
-    } catch (e) {
-
-        addLog(
-            `@${username}: Failed to fetch profile`,
-            'banned'
-        );
-
-    }
-
-}
-
-
-
-// ======================================================
-// SET STATUS
-// ======================================================
-
-function setStatus(
-    id,
-    status
-) {
-
-    const el =
-        document.getElementById(
-            `status-${id}`
-        );
-
-
-    const mini =
-        document.getElementById(
-            `mini-status-${id}`
-        );
-
-
-    el.textContent =
-        status;
-
-
-    if (
-        status === 'ACTIVE'
-    ) {
-
-        el.className =
-            'text-3xl font-bold mt-1 status-active';
-
-        mini.className =
-            'text-sm font-bold status-active';
-
-    } else {
-
-        el.className =
-            'text-3xl font-bold mt-1 status-banned';
-
-        mini.className =
-            'text-sm font-bold status-banned';
-
-    }
-
-
-    mini.textContent =
-        status;
-
-}
-
-
-
-// ======================================================
-// START / STOP MONITOR
-// ======================================================
-
-async function toggleMonitor(
-    id
-) {
-
-    const monitor =
-        monitors.get(id);
-
-
-    if (!monitor)
-        return;
-
-
-    if (
-        !monitor.username
-    ) {
-
-        return alert(
-            'First check a profile'
-        );
-
-    }
-
-
-    const btn =
-        document.getElementById(
-            `btn-${id}`
-        );
-
-
-    // ================================================
-    // STOP
-    // ================================================
-
-    if (
-        monitor.monitoring
-    ) {
-
-        try {
-
-            await fetch(
-                '/api/monitor/stop',
-                {
-
-                    method: 'POST',
-
-                    headers: {
-                        'Content-Type':
-                            'application/json'
-                    },
-
-                    body:
-                        JSON.stringify({
-                            username:
-                                monitor.username
-                        })
-
-                }
-            );
-
-        } catch (e) {}
-
-
-        monitor.monitoring =
-            false;
-
-
-        monitor.startedAt =
-            null;
-
-
-        btn.textContent =
-            'START MONITOR';
-
-
-        btn.className =
-            `
-            px-7
-            py-3
-            bg-gradient-to-r
-            from-yellow-400
-            to-amber-500
-            text-black
-            rounded-2xl
-            font-bold
-            `;
-
-
-        addLog(
-            `Monitoring stopped for @${monitor.username}`
-        );
-
-
-        return;
-
-    }
-
-
-
-    // ================================================
-    // START
-    // ================================================
-
-    const res =
-        await fetch(
-            '/api/monitor/start',
-            {
-
-                method: 'POST',
-
-                headers: {
-                    'Content-Type':
-                        'application/json'
-                },
-
-                body:
-                    JSON.stringify({
-                        username:
-                            monitor.username
-                    })
-
-            }
-        );
-
-
-    const data =
-        await res.json();
-
-
-    if (
-        !data.success
-    ) {
-
-        addLog(
-            `Failed to start @${monitor.username}`,
-            'banned'
-        );
-
-        return;
-
-    }
-
-
-    monitor.monitoring =
-        true;
-
-
-    monitor.startedAt =
-        Date.now();
-
-
-    btn.textContent =
-        'STOP MONITOR';
-
-
-    btn.className =
-        `
-        px-7
-        py-3
-        bg-red-600
-        text-white
-        rounded-2xl
-        font-bold
+        badge.innerHTML = `
+          <span
+            class="w-1.5 h-1.5 rounded-full ${
+              status === "ACTIVE"
+                ? "bg-green-400"
+                : status === "BANNED"
+                ? "bg-red-400"
+                : "bg-purple-400"
+            }"
+          ></span>
+
+          ${escapeHtml(status)}
         `;
 
+      });
 
-    addLog(
-        `Started monitoring @${monitor.username}`
-    );
-
-
-    // New active card stays expanded
-
-    minimizeOthers(id);
-
-}
+    }
 
 
+    async function toggleMonitor(id) {
 
-// ======================================================
-// RESTORE BACKEND MONITORS
-// ======================================================
+      const monitor =
+        monitors.get(id);
 
-async function restoreBackendMonitors() {
+      const card =
+        document.getElementById(`monitor-${id}`);
 
-    try {
+      if (!monitor || !card) return;
 
-        const res =
+
+      const input =
+        card.querySelector(".username-input-field");
+
+      const username =
+        input.value.trim().replace(/^@/, "");
+
+
+      if (!username) {
+
+        alert("Enter Instagram username first");
+
+        return;
+
+      }
+
+
+      const button =
+        card.querySelector(".monitor-toggle-btn");
+
+
+      try {
+
+        if (!monitor.monitoring) {
+
+          const response =
             await fetch(
-                '/api/monitor/status'
+              "/api/monitor/start",
+              {
+                method: "POST",
+
+                headers: {
+                  "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                  username
+                })
+              }
             );
 
 
-        const data =
-            await res.json();
+          const data =
+            await response.json();
 
 
-        if (
-            !data.success
-        )
-            return;
+          if (!response.ok) {
 
-
-        for (
-            const saved
-            of data.monitors
-        ) {
-
-            const id =
-                `m${++monitorCounter}`;
-
-
-            const monitor = {
-
-                id,
-
-                username:
-                    saved.username,
-
-                monitoring: true,
-
-                startedAt:
-                    saved.startedAt
-
-            };
-
-
-            monitors.set(
-                id,
-                monitor
+            throw new Error(
+              data.error || "Failed to start monitor"
             );
 
-
-            // Restore minimized
-
-            renderMonitorCard(
-                monitor,
-                true
-            );
+          }
 
 
-            document
-                .getElementById(
-                    `profile-${id}`
-                )
-                .classList
-                .remove(
-                    'hidden'
-                );
+          monitor.username = username;
+
+          monitor.monitoring = true;
+
+          monitor.startedAt =
+            data.startedAt || Date.now();
 
 
-            const btn =
-                document.getElementById(
-                    `btn-${id}`
-                );
+          button.innerHTML = `
+            <i class="fa-solid fa-stop mr-2"></i>
+            STOP MONITOR
+          `;
 
 
-            btn.textContent =
-                'STOP MONITOR';
+          setStatus(
+            id,
+            data.lastStatus ||
+            monitor.lastStatus ||
+            "UNKNOWN"
+          );
 
-
-            btn.className =
-                `
-                px-7
-                py-3
-                bg-red-600
-                text-white
-                rounded-2xl
-                font-bold
-                `;
-
-
-            document
-                .getElementById(
-                    `input-${id}`
-                )
-                .value =
-                    saved.username;
-
-
-            // Fetch current profile
-
-            await fetchProfile(
-                id
-            );
-
-
-            addLog(
-                `Restored monitoring @${saved.username}`,
-                'active'
-            );
-
-        }
-
-
-        // If there are no saved monitors,
-        // create first empty monitor
-
-        if (
-            monitors.size === 0
-        ) {
-
-            addMonitor();
 
         } else {
 
-            // Last restored card expanded
+          const response =
+            await fetch(
+              "/api/monitor/stop",
+              {
+                method: "POST",
 
-            const lastId =
-                [
-                    ...monitors.keys()
-                ].at(-1);
+                headers: {
+                  "Content-Type": "application/json"
+                },
 
-
-            minimizeOthers(
-                lastId
+                body: JSON.stringify({
+                  username:
+                    monitor.username
+                })
+              }
             );
+
+
+          const data =
+            await response.json();
+
+
+          if (!response.ok) {
+
+            throw new Error(
+              data.error || "Failed to stop monitor"
+            );
+
+          }
+
+
+          monitor.monitoring = false;
+
+          button.innerHTML = `
+            <i class="fa-solid fa-play mr-2"></i>
+            START MONITOR
+          `;
 
         }
 
 
         updateCount();
 
+      } catch (error) {
 
-    } catch (e) {
+        console.error(error);
 
-        addLog(
-            'Failed to restore backend monitors',
-            'banned'
-        );
+        alert(error.message);
 
-
-        if (
-            monitors.size === 0
-        ) {
-
-            addMonitor();
-
-        }
+      }
 
     }
 
-}
+
+    async function restoreBackendMonitors() {
+
+      try {
+
+        const response =
+          await fetch("/api/monitor/status");
 
 
-
-// ======================================================
-// UPDATE FRONTEND TIMERS
-// ======================================================
-
-function updateTimers() {
-
-    const now =
-        Date.now();
-
-
-    monitors.forEach(
-        monitor => {
-
-            if (
-                !monitor.monitoring ||
-                !monitor.startedAt
-            ) {
-
-                return;
-
-            }
-
-
-            const seconds =
-                Math.floor(
-                    (
-                        now -
-                        monitor.startedAt
-                    ) / 1000
-                );
-
-
-            const value =
-                formatElapsed(
-                    seconds
-                );
-
-
-            const big =
-                document.getElementById(
-                    `time-${monitor.id}`
-                );
-
-
-            const mini =
-                document.getElementById(
-                    `mini-time-${monitor.id}`
-                );
-
-
-            if (big) {
-
-                big.textContent =
-                    value;
-
-            }
-
-
-            if (mini) {
-
-                mini.textContent =
-                    value;
-
-            }
-
+        if (!response.ok) {
+          return;
         }
-    );
-
-}
 
 
-
-// Update timer every second
-
-setInterval(
-    updateTimers,
-    1000
-);
+        const data =
+          await response.json();
 
 
+        const saved =
+          Array.isArray(data)
+            ? data
+            : data.monitors || [];
 
-// ======================================================
-// PAGE LOAD
-// ======================================================
 
-window.addEventListener(
-    'DOMContentLoaded',
-    () => {
+        saved.forEach((item) => {
+
+          if (!item.username) return;
+
+          addMonitor({
+
+            username:
+              item.username,
+
+            monitoring:
+              item.monitoring !== false,
+
+            startedAt:
+              item.startedAt,
+
+            lastStatus:
+              item.lastStatus,
+
+            elapsedSeconds:
+              item.elapsedSeconds || 0
+
+          });
+
+        });
+
+
+        const cards =
+          document.querySelectorAll(
+            ".monitor-card"
+          );
+
+
+        cards.forEach((card) => {
+          card.classList.add("minimized");
+        });
+
+
+        if (cards.length) {
+          cards[cards.length - 1]
+            .classList.remove("minimized");
+        }
+
+
+        monitors.forEach((monitor, id) => {
+
+          const card =
+            document.getElementById(
+              `monitor-${id}`
+            );
+
+          if (!card) return;
+
+
+          const button =
+            card.querySelector(
+              ".monitor-toggle-btn"
+            );
+
+
+          if (monitor.monitoring) {
+
+            button.innerHTML = `
+              <i class="fa-solid fa-stop mr-2"></i>
+              STOP MONITOR
+            `;
+
+          } else {
+
+            button.innerHTML = `
+              <i class="fa-solid fa-play mr-2"></i>
+              START MONITOR
+            `;
+
+          }
+
+        });
+
+
+        updateCount();
+
+      } catch (error) {
+
+        console.error(
+          "Failed to restore monitors:",
+          error
+        );
+
+      }
+
+    }
+
+
+    async function updateTimers() {
+
+      try {
+
+        const response =
+          await fetch("/api/monitor/status");
+
+
+        if (!response.ok) return;
+
+
+        const data =
+          await response.json();
+
+
+        const saved =
+          Array.isArray(data)
+            ? data
+            : data.monitors || [];
+
+
+        const backendMap =
+          new Map(
+            saved.map(
+              item => [
+                item.username,
+                item
+              ]
+            )
+          );
+
+
+        monitors.forEach((monitor, id) => {
+
+          if (!monitor.username) return;
+
+
+          const backend =
+            backendMap.get(
+              monitor.username
+            );
+
+
+          if (backend) {
+
+            monitor.monitoring =
+              backend.monitoring;
+
+            monitor.elapsedSeconds =
+              backend.elapsedSeconds || 0;
+
+            monitor.startedAt =
+              backend.startedAt ||
+              monitor.startedAt;
+
+            if (backend.lastStatus) {
+
+              setStatus(
+                id,
+                backend.lastStatus
+              );
+
+            }
+
+          }
+
+
+          const card =
+            document.getElementById(
+              `monitor-${id}`
+            );
+
+
+          if (!card) return;
+
+
+          const elapsed =
+            monitor.elapsedSeconds || 0;
+
+
+          const timerText =
+            formatElapsed(elapsed);
+
+
+          const timer =
+            card.querySelector(".timer");
+
+
+          if (timer) {
+            timer.textContent =
+              timerText;
+          }
+
+
+          const monitoringTime =
+            card.querySelector(
+              ".monitoring-time"
+            );
+
+
+          if (monitoringTime) {
+            monitoringTime.textContent =
+              timerText;
+          }
+
+        });
+
+
+        updateCount();
+
+      } catch (error) {
+
+        console.error(
+          "Timer update failed:",
+          error
+        );
+
+      }
+
+    }
+
+
+    /* =========================================================
+       STARTUP
+       ========================================================= */
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      () => {
+
+        document
+          .getElementById("add-monitor-btn")
+          .addEventListener(
+            "click",
+            () => addMonitor()
+          );
+
 
         restoreBackendMonitors();
 
-    }
-);
 
-</script>
+        /* Backend is authoritative */
+
+        setInterval(
+          updateTimers,
+          1000
+        );
+
+      }
+    );
+
+  </script>
 
 </body>
 </html>
