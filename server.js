@@ -4,419 +4,49 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 
-const PORT = process.env.PORT || 5000;
-
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-// ======================================================
-// BACKEND MONITOR PERSISTENCE
-// ======================================================
-
-// Saved monitors file
+const PORT = process.env.PORT || 5000;
 const MONITOR_FILE = path.join(__dirname, 'monitors.json');
 
-// Active backend monitors
-const backendMonitors = new Map();
-
-
-// ------------------------------------------------------
-// Load saved monitors when server starts
-// ------------------------------------------------------
-function loadSavedMonitors() {
-    try {
-        if (!fs.existsSync(MONITOR_FILE)) {
-            console.log('📁 No saved monitors found.');
-            return;
-        }
-
-        const saved = JSON.parse(
-            fs.readFileSync(MONITOR_FILE, 'utf8')
-        );
-
-        if (!Array.isArray(saved)) return;
-
-        saved.forEach(username => {
-            if (typeof username === 'string' && username.trim()) {
-                startBackendMonitor(
-                    username.trim()
-                        .toLowerCase()
-                        .replace('@', ''),
-                    false
-                );
-            }
-        });
-
-        console.log(`🔄 Loaded ${saved.length} saved monitor(s).`);
-
-    } catch (e) {
-        console.error(
-            '❌ Failed to load saved monitors:',
-            e.message
-        );
-    }
-}
-
-
-// ------------------------------------------------------
-// Save currently active monitors
-// ------------------------------------------------------
-function saveMonitors() {
-    try {
-        fs.writeFileSync(
-            MONITOR_FILE,
-            JSON.stringify(
-                [...backendMonitors.keys()],
-                null,
-                2
-            )
-        );
-
-    } catch (e) {
-        console.error(
-            '❌ Failed to save monitors:',
-            e.message
-        );
-    }
-}
-
-
-// ------------------------------------------------------
-// Start backend monitor
-// ------------------------------------------------------
-function startBackendMonitor(username, save = true) {
-
-    username = username
-        .trim()
-        .toLowerCase()
-        .replace('@', '');
-
-    if (!username) return false;
-
-    // Already monitoring
-    if (backendMonitors.has(username)) {
-        return false;
-    }
-
-
-    // --------------------------------------------------
-    // Check every 3 seconds
-    // --------------------------------------------------
-    const interval = setInterval(async () => {
-
-        try {
-
-            const result = await axios.post(
-                `http://127.0.0.1:${PORT}/api/check`,
-                {
-                    username
-                },
-                {
-                    timeout: 15000
-                }
-            );
-
-            const data = result.data;
-
-            console.log(
-                `[MONITOR] @${username} -> ${
-                    data.exists ? 'ACTIVE' : 'BANNED'
-                }`
-            );
-
-        } catch (e) {
-
-            console.log(
-                `[MONITOR] @${username} -> API ERROR`
-            );
-
-        }
-
-    }, 3000);
-
-
-    // Store monitor
-    backendMonitors.set(
-        username,
-        interval
-    );
-
-
-    // Save monitor to disk
-    if (save) {
-        saveMonitors();
-    }
-
-
-    // --------------------------------------------------
-    // Immediate first check
-    // --------------------------------------------------
-    axios.post(
-        `http://127.0.0.1:${PORT}/api/check`,
-        {
-            username
-        },
-        {
-            timeout: 15000
-        }
-    )
-    .then(result => {
-
-        console.log(
-            `[MONITOR] @${username} -> ${
-                result.data.exists
-                    ? 'ACTIVE'
-                    : 'BANNED'
-            }`
-        );
-
-    })
-    .catch(() => {
-
-        console.log(
-            `[MONITOR] @${username} -> API ERROR`
-        );
-
-    });
-
-
-    console.log(
-        `👁️ Backend monitoring started: @${username}`
-    );
-
-    return true;
-}
-
-
-// ------------------------------------------------------
-// Stop backend monitor
-// ------------------------------------------------------
-function stopBackendMonitor(username) {
-
-    username = username
-        .trim()
-        .toLowerCase()
-        .replace('@', '');
-
-    const interval =
-        backendMonitors.get(username);
-
-    if (!interval) {
-        return false;
-    }
-
-
-    clearInterval(interval);
-
-    backendMonitors.delete(username);
-
-    saveMonitors();
-
-
-    console.log(
-        `🛑 Backend monitoring stopped: @${username}`
-    );
-
-    return true;
-}
-
-
-// ======================================================
-// MONITOR API
-// ======================================================
-
-
-// ------------------------------------------------------
-// START MONITOR
-// ------------------------------------------------------
-app.post('/api/monitor/start', (req, res) => {
-
-    let { username } = req.body;
-
-    if (!username) {
-        return res.status(400).json({
-            success: false,
-            error: 'Username required'
-        });
-    }
-
-
-    username = username
-        .trim()
-        .toLowerCase()
-        .replace('@', '');
-
-
-    startBackendMonitor(
-        username,
-        true
-    );
-
-
-    res.json({
-        success: true,
-        monitoring: true,
-        username
-    });
-
-});
-
-
-// ------------------------------------------------------
-// STOP MONITOR
-// ------------------------------------------------------
-app.post('/api/monitor/stop', (req, res) => {
-
-    let { username } = req.body;
-
-    if (!username) {
-        return res.status(400).json({
-            success: false,
-            error: 'Username required'
-        });
-    }
-
-
-    username = username
-        .trim()
-        .toLowerCase()
-        .replace('@', '');
-
-
-    stopBackendMonitor(username);
-
-
-    res.json({
-        success: true,
-        monitoring: false,
-        username
-    });
-
-});
-
-
-// ------------------------------------------------------
-// MONITOR STATUS
-// ------------------------------------------------------
-app.get('/api/monitor/status', (req, res) => {
-
-    const username =
-        (req.query.username || '')
-            .trim()
-            .toLowerCase()
-            .replace('@', '');
-
-
-    res.json({
-
-        monitoring:
-            username
-                ? backendMonitors.has(username)
-                : false,
-
-        username,
-
-        monitors:
-            [...backendMonitors.keys()]
-
-    });
-
-});
-
-
-// ======================================================
-// MAIN PAGE
-// ======================================================
+// username -> { interval, startedAt, lastStatus }
+const monitors = new Map();
 
 app.get('/', (req, res) => {
-
-    res.sendFile(
-        path.join(
-            __dirname,
-            'public',
-            'index.html'
-        )
-    );
-
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-
-// ======================================================
-// HTML ENTITY DECODER
-// ======================================================
-
 function decodeHTMLEntities(text) {
-
     if (!text) return "";
 
     return text
-
-        .replace(
-            /&#x([0-9a-fA-F]+);/g,
-            (_, hex) =>
-                String.fromCodePoint(
-                    parseInt(hex, 16)
-                )
+        .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) =>
+            String.fromCodePoint(parseInt(hex, 16))
         )
-
-        .replace(
-            /&#(\d+);/g,
-            (_, num) =>
-                String.fromCodePoint(
-                    num
-                )
+        .replace(/&#(\d+);/g, (_, num) =>
+            String.fromCodePoint(num)
         )
-
-        .replace(
-            /&amp;/g,
-            '&'
-        )
-
-        .replace(
-            /&lt;/g,
-            '<'
-        )
-
-        .replace(
-            /&gt;/g,
-            '>'
-        )
-
-        .replace(
-            /&quot;/g,
-            '"'
-        );
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"');
 }
 
 
 // ======================================================
-// EXISTING INSTAGRAM CHECK API
+// INSTAGRAM CHECK
 // ======================================================
 
-app.post('/api/check', async (req, res) => {
-
-    let { username } = req.body;
-
-
-    if (!username) {
-
-        return res.json({
-            exists: false,
-            status: "BANNED"
-        });
-
-    }
-
+async function checkInstagram(username) {
 
     username = username
         .trim()
         .toLowerCase()
         .replace('@', '');
-
 
     // ==================================================
     // METHOD 1
@@ -425,19 +55,15 @@ app.post('/api/check', async (req, res) => {
     try {
 
         const headers = {
-
-            "x-ig-app-id":
-                "936619743392459",
+            "x-ig-app-id": "936619743392459",
 
             "User-Agent":
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
 
-            "Accept":
-                "*/*",
+            "Accept": "*/*",
 
             "Referer":
                 "https://www.instagram.com/"
-
         };
 
 
@@ -447,11 +73,8 @@ app.post('/api/check', async (req, res) => {
 
             {
                 headers,
-
                 timeout: 12000,
-
-                validateStatus:
-                    () => true
+                validateStatus: () => true
             }
 
         );
@@ -466,7 +89,7 @@ app.post('/api/check', async (req, res) => {
                 response.data.data.user;
 
 
-            return res.json({
+            return {
 
                 exists: true,
 
@@ -504,13 +127,13 @@ app.post('/api/check', async (req, res) => {
 
                 }
 
-            });
+            };
 
         }
 
     } catch (e) {
 
-        // Continue to Method 2
+        // Continue to method 2
 
     }
 
@@ -572,7 +195,7 @@ app.post('/api/check', async (req, res) => {
 
 
             // ------------------------------------------
-            // Name
+            // NAME
             // ------------------------------------------
 
             const titleMatch =
@@ -594,7 +217,7 @@ app.post('/api/check', async (req, res) => {
 
 
             // ------------------------------------------
-            // Description
+            // DESCRIPTION
             // ------------------------------------------
 
             const descMatch =
@@ -646,7 +269,7 @@ app.post('/api/check', async (req, res) => {
 
 
             // ------------------------------------------
-            // Profile picture
+            // PROFILE PICTURE
             // ------------------------------------------
 
             const picMatch =
@@ -663,7 +286,7 @@ app.post('/api/check', async (req, res) => {
             }
 
 
-            return res.json({
+            return {
 
                 exists: true,
 
@@ -694,7 +317,7 @@ app.post('/api/check', async (req, res) => {
 
                 }
 
-            });
+            };
 
         }
 
@@ -705,29 +328,633 @@ app.post('/api/check', async (req, res) => {
     }
 
 
-    // ==================================================
-    // NOT FOUND / BANNED
-    // ==================================================
-
-    return res.json({
+    return {
 
         exists: false,
 
         status: "BANNED"
 
-    });
+    };
+
+}
+
+
+// ======================================================
+// EXISTING /api/check API
+// ======================================================
+
+app.post('/api/check', async (req, res) => {
+
+    let { username } =
+        req.body;
+
+
+    if (!username) {
+
+        return res.json({
+
+            exists: false,
+
+            status: "BANNED"
+
+        });
+
+    }
+
+
+    const result =
+        await checkInstagram(username);
+
+
+    return res.json(result);
 
 });
+
+
+// ======================================================
+// SAVE MONITORS
+// ======================================================
+
+function saveMonitors() {
+
+    try {
+
+        const data =
+            [...monitors.entries()]
+                .map(([username, monitor]) => ({
+
+                    username,
+
+                    startedAt:
+                        monitor.startedAt,
+
+                    lastStatus:
+                        monitor.lastStatus
+
+                }));
+
+
+        fs.writeFileSync(
+
+            MONITOR_FILE,
+
+            JSON.stringify(
+                data,
+                null,
+                2
+            )
+
+        );
+
+    } catch (e) {
+
+        console.error(
+            '❌ Failed to save monitors:',
+            e.message
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// FORMAT TIMER
+// ======================================================
+
+function formatElapsed(ms) {
+
+    const totalSeconds =
+        Math.max(
+            0,
+            Math.floor(ms / 1000)
+        );
+
+
+    const hours =
+        Math.floor(
+            totalSeconds / 3600
+        );
+
+
+    const minutes =
+        Math.floor(
+            (totalSeconds % 3600) / 60
+        );
+
+
+    const seconds =
+        totalSeconds % 60;
+
+
+    return [
+
+        String(hours)
+            .padStart(2, '0'),
+
+        String(minutes)
+            .padStart(2, '0'),
+
+        String(seconds)
+            .padStart(2, '0')
+
+    ].join(':');
+
+}
+
+
+// ======================================================
+// MONITOR CHECK
+// ======================================================
+
+async function performMonitorCheck(username) {
+
+    const monitor =
+        monitors.get(username);
+
+
+    if (!monitor) return;
+
+
+    try {
+
+        const data =
+            await checkInstagram(
+                username
+            );
+
+
+        const newStatus =
+            data.status === 'ACTIVE'
+                ? 'ACTIVE'
+                : 'BANNED';
+
+
+        // First check
+        if (
+            monitor.lastStatus === null
+        ) {
+
+            monitor.lastStatus =
+                newStatus;
+
+
+            saveMonitors();
+
+
+            console.log(
+                `[MONITOR] @${username} -> ${newStatus}`
+            );
+
+
+            return;
+
+        }
+
+
+        // ==================================================
+        // STATUS CHANGED
+        // ==================================================
+
+        if (
+            monitor.lastStatus !==
+            newStatus
+        ) {
+
+            const elapsed =
+                Date.now() -
+                monitor.startedAt;
+
+
+            console.log('');
+
+            console.log(
+                `🔔 @${username} STATUS CHANGED: ${monitor.lastStatus} → ${newStatus}`
+            );
+
+            console.log(
+                `⏱️ Time taken from monitoring start: ${formatElapsed(elapsed)}`
+            );
+
+            console.log('');
+
+
+            monitor.lastStatus =
+                newStatus;
+
+
+            saveMonitors();
+
+
+        } else {
+
+            console.log(
+                `[MONITOR] @${username} -> ${newStatus}`
+            );
+
+        }
+
+
+    } catch (e) {
+
+        console.log(
+            `[MONITOR] @${username} -> API ERROR`
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// START BACKEND MONITOR
+// ======================================================
+
+function startMonitor(
+    username,
+    saved = false,
+    savedData = null
+) {
+
+    username =
+        username
+            .trim()
+            .toLowerCase()
+            .replace('@', '');
+
+
+    if (!username)
+        return false;
+
+
+    // Already running
+    if (
+        monitors.has(username)
+    ) {
+
+        return false;
+
+    }
+
+
+    const monitor = {
+
+        interval: null,
+
+        startedAt:
+            savedData?.startedAt ||
+            Date.now(),
+
+        lastStatus:
+            savedData?.lastStatus ??
+            null
+
+    };
+
+
+    monitors.set(
+        username,
+        monitor
+    );
+
+
+    // Check every 3 seconds
+
+    monitor.interval =
+        setInterval(() => {
+
+            performMonitorCheck(
+                username
+            );
+
+        }, 3000);
+
+
+    console.log(
+        `👁️ Backend monitoring ${
+            saved
+                ? 'restored'
+                : 'started'
+        }: @${username}`
+    );
+
+
+    // Immediate first check
+
+    performMonitorCheck(
+        username
+    );
+
+
+    if (!saved) {
+
+        saveMonitors();
+
+    }
+
+
+    return true;
+
+}
+
+
+// ======================================================
+// STOP BACKEND MONITOR
+// ======================================================
+
+function stopMonitor(username) {
+
+    username =
+        username
+            .trim()
+            .toLowerCase()
+            .replace('@', '');
+
+
+    const monitor =
+        monitors.get(username);
+
+
+    if (!monitor) {
+
+        return false;
+
+    }
+
+
+    clearInterval(
+        monitor.interval
+    );
+
+
+    monitors.delete(
+        username
+    );
+
+
+    saveMonitors();
+
+
+    console.log(
+        `🛑 Backend monitoring stopped: @${username}`
+    );
+
+
+    return true;
+
+}
+
+
+// ======================================================
+// START MONITOR API
+// ======================================================
+
+app.post(
+    '/api/monitor/start',
+    (req, res) => {
+
+        let { username } =
+            req.body;
+
+
+        if (!username) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                error:
+                    'Username required'
+
+            });
+
+        }
+
+
+        username =
+            username
+                .trim()
+                .toLowerCase()
+                .replace('@', '');
+
+
+        const started =
+            startMonitor(
+                username
+            );
+
+
+        res.json({
+
+            success: true,
+
+            monitoring: true,
+
+            username,
+
+            alreadyRunning:
+                !started
+
+        });
+
+    }
+);
+
+
+// ======================================================
+// STOP MONITOR API
+// ======================================================
+
+app.post(
+    '/api/monitor/stop',
+    (req, res) => {
+
+        let { username } =
+            req.body;
+
+
+        if (!username) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                error:
+                    'Username required'
+
+            });
+
+        }
+
+
+        username =
+            username
+                .trim()
+                .toLowerCase()
+                .replace('@', '');
+
+
+        stopMonitor(
+            username
+        );
+
+
+        res.json({
+
+            success: true,
+
+            monitoring: false,
+
+            username
+
+        });
+
+    }
+);
+
+
+// ======================================================
+// MONITOR STATUS API
+// ======================================================
+
+app.get(
+    '/api/monitor/status',
+    (req, res) => {
+
+        const result =
+            [...monitors.entries()]
+                .map(
+                    ([username, monitor]) => ({
+
+                        username,
+
+                        monitoring:
+                            true,
+
+                        startedAt:
+                            monitor.startedAt,
+
+                        lastStatus:
+                            monitor.lastStatus,
+
+                        elapsedSeconds:
+                            Math.floor(
+                                (
+                                    Date.now() -
+                                    monitor.startedAt
+                                ) / 1000
+                            )
+
+                    })
+                );
+
+
+        res.json({
+
+            success: true,
+
+            monitors:
+                result
+
+        });
+
+    }
+);
 
 
 // ======================================================
 // LOAD SAVED MONITORS
 // ======================================================
 
-// This runs when the Node.js server starts.
-// Saved monitors will continue automatically.
+function loadSavedMonitors() {
 
-loadSavedMonitors();
+    try {
+
+        if (
+            !fs.existsSync(
+                MONITOR_FILE
+            )
+        ) {
+
+            console.log(
+                '📁 No saved monitors found.'
+            );
+
+            return;
+
+        }
+
+
+        const saved =
+            JSON.parse(
+                fs.readFileSync(
+                    MONITOR_FILE,
+                    'utf8'
+                )
+            );
+
+
+        if (
+            !Array.isArray(saved)
+        ) {
+
+            return;
+
+        }
+
+
+        for (
+            const item of saved
+        ) {
+
+            // Old format:
+            // ["username"]
+
+            if (
+                typeof item ===
+                'string'
+            ) {
+
+                startMonitor(
+                    item,
+                    true
+                );
+
+            }
+
+            // New format:
+            // [{ username, startedAt, lastStatus }]
+
+            else if (
+                item?.username
+            ) {
+
+                startMonitor(
+                    item.username,
+                    true,
+                    item
+                );
+
+            }
+
+        }
+
+
+        console.log(
+            `🔄 Restored ${monitors.size} monitor(s).`
+        );
+
+
+    } catch (e) {
+
+        console.error(
+            '❌ Failed to load saved monitors:',
+            e.message
+        );
+
+    }
+
+}
 
 
 // ======================================================
@@ -735,13 +962,20 @@ loadSavedMonitors();
 // ======================================================
 
 app.listen(
+
     PORT,
+
     '0.0.0.0',
+
     () => {
 
         console.log(
             `🚀 Server running on http://localhost:${PORT}`
         );
 
+
+        loadSavedMonitors();
+
     }
+
 );
