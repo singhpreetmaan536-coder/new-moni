@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Ban Monitor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        .status-active { color: #22c55e; text-shadow: 0 0 10px #22c55e; }
+        .status-banned { color: #ef4444; text-shadow: 0 0 10px #ef4444; }
+    </style>
+</head>
+<body class="min-h-screen text-white">
+    <div class="max-w-3xl mx-auto p-6">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold tracking-tight">
+                <i class="fas fa-eye text-yellow-400"></i> Instagram Ban Monitor
+            </h1>
+            <p class="text-zinc-400 mt-2">Real-time ban / unban detection</p>
+        </div>
+
+        <!-- Input -->
+        <div class="bg-zinc-900 border border-zinc-700 rounded-3xl p-8 mb-8">
+            <label class="block text-sm text-zinc-400 mb-2">USERNAME</label>
+            <div class="flex gap-3">
+                <input id="username" type="text" placeholder="@username" 
+                       class="flex-1 bg-black border border-zinc-700 focus:border-yellow-500 rounded-2xl px-6 py-4 text-lg outline-none">
+                <button onclick="fetchProfile()" 
+                        class="px-8 bg-yellow-500 hover:bg-yellow-600 text-black rounded-2xl font-bold">
+                    CHECK PROFILE
+                </button>
+            </div>
+        </div>
+
+        <!-- Profile Card -->
+        <div id="profile-card" class="hidden bg-zinc-900 border border-zinc-700 rounded-3xl p-8 mb-8">
+            <div class="flex gap-6 items-start">
+                <img id="pfp" src="" class="w-28 h-28 rounded-2xl object-cover border-4 border-yellow-500" 
+                     onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
+                
+                <div class="flex-1">
+                    <h2 id="fullname" class="text-2xl font-bold"></h2>
+                    <p id="user" class="text-yellow-400 text-lg"></p>
+                    <p id="bio" class="text-zinc-400 text-sm mt-2 whitespace-pre-wrap"></p>
+                    
+                    <div class="grid grid-cols-3 gap-4 mt-5 text-center">
+                        <div class="bg-black rounded-2xl p-3">
+                            <div id="followers" class="text-xl font-bold text-emerald-400">0</div>
+                            <div class="text-xs text-zinc-500">Followers</div>
+                        </div>
+                        <div class="bg-black rounded-2xl p-3">
+                            <div id="following" class="text-xl font-bold text-emerald-400">0</div>
+                            <div class="text-xs text-zinc-500">Following</div>
+                        </div>
+                        <div class="bg-black rounded-2xl p-3">
+                            <div id="posts" class="text-xl font-bold text-emerald-400">0</div>
+                            <div class="text-xs text-zinc-500">Posts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status + Monitor Button -->
+            <div class="mt-8 flex items-center justify-between">
+                <div>
+                    <div class="text-sm text-zinc-400">CURRENT STATUS</div>
+                    <div id="status" class="text-3xl font-bold mt-1">—</div>
+                </div>
+                <button id="monitor-btn" onclick="toggleMonitor()" 
+                        class="px-10 py-4 bg-gradient-to-r from-yellow-400 to-amber-500 text-black rounded-2xl font-bold text-lg">
+                    START MONITOR
+                </button>
+            </div>
+        </div>
+
+        <!-- Live Log -->
+        <div class="bg-zinc-900 border border-zinc-700 rounded-3xl p-6">
+            <h3 class="text-sm font-semibold text-yellow-400 mb-3">LIVE MONITOR LOG</h3>
+            <div id="log" class="h-48 overflow-y-auto font-mono text-sm space-y-1"></div>
+        </div>
+    </div>
+
+    <script>
+        let isMonitoring = false;
+        let currentUsername = "";
+
+        function addLog(msg, type = "normal") {
+            const log = document.getElementById('log');
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+            const color = type === "banned" ? "text-red-400" : type === "active" ? "text-emerald-400" : "text-zinc-300";
+            log.innerHTML = `<div class="${color}">[${time}] ${msg}</div>` + log.innerHTML;
+        }
+
+        function updateStatus(status) {
+            const el = document.getElementById('status');
+            if (status === "ACTIVE") {
+                el.textContent = "ACTIVE";
+                el.className = "text-3xl font-bold mt-1 status-active";
+            } else {
+                el.textContent = "BANNED";
+                el.className = "text-3xl font-bold mt-1 status-banned";
+            }
+        }
+
+        async function fetchProfile() {
+            const username = document.getElementById('username').value.trim();
+            if (!username) return alert("Enter username");
+
+            currentUsername = username.replace('@', '');
+            addLog(`Fetching profile for @${currentUsername}...`);
+
+            try {
+                const res = await fetch('/api/check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: currentUsername })
+                });
+                const data = await res.json();
+
+                document.getElementById('profile-card').classList.remove('hidden');
+
+                if (data.exists && data.user) {
+                    document.getElementById('pfp').src = data.user.profile_pic || '';
+                    document.getElementById('fullname').textContent = data.user.full_name || data.user.username;
+                    document.getElementById('user').textContent = `@${data.user.username}`;
+                    document.getElementById('bio').textContent = data.user.biography || "No bio";
+                    document.getElementById('followers').textContent = data.user.followers;
+                    document.getElementById('following').textContent = data.user.following;
+                    document.getElementById('posts').textContent = data.user.posts;
+
+                    updateStatus("ACTIVE");
+                    addLog(`@${currentUsername} is ACTIVE`, "active");
+                } else {
+                    document.getElementById('pfp').src = '';
+                    document.getElementById('fullname').textContent = currentUsername;
+                    document.getElementById('user').textContent = `@${currentUsername}`;
+                    document.getElementById('bio').textContent = "Account not found or banned";
+                    document.getElementById('followers').textContent = "—";
+                    document.getElementById('following').textContent = "—";
+                    document.getElementById('posts').textContent = "—";
+
+                    updateStatus("BANNED");
+                    addLog(`@${currentUsername} is BANNED`, "banned");
+                }
+            } catch (e) {
+                addLog("Failed to fetch profile", "banned");
+            }
+        }
+
+        async function toggleMonitor() {
+            const btn = document.getElementById('monitor-btn');
+
+            if (isMonitoring) {
+                try {
+                    await fetch('/api/monitor/stop', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: currentUsername })
+                    });
+                } catch (e) {}
+
+                isMonitoring = false;
+                btn.textContent = "START MONITOR";
+                btn.className = "px-10 py-4 bg-gradient-to-r from-yellow-400 to-amber-500 text-black rounded-2xl font-bold text-lg";
+                addLog("Monitoring stopped");
+            } else {
+                if (!currentUsername) return alert("First check a profile");
+
+                try {
+                    const res = await fetch('/api/monitor/start', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: currentUsername })
+                    });
+                    const data = await res.json();
+                    if (!data.success) throw new Error(data.error || 'Failed to start monitor');
+
+                    isMonitoring = true;
+                    btn.textContent = "STOP MONITOR";
+                    btn.className = "px-10 py-4 bg-red-600 text-white rounded-2xl font-bold text-lg";
+                    addLog(`Started backend monitoring @${currentUsername}`);
+                    checkStatus();
+                } catch (e) {
+                    addLog("Failed to start backend monitor", "banned");
+                }
+            }
+        }
+
+        async function restoreBackendMonitor() {
+            try {
+                const saved = await fetch('/api/monitor/status').then(r => r.json());
+                if (!saved.monitors || saved.monitors.length === 0) return;
+
+                // Restore the first active monitor in the UI. Backend keeps all monitors running.
+                currentUsername = saved.monitors[0];
+                document.getElementById('username').value = `@${currentUsername}`;
+                isMonitoring = true;
+                document.getElementById('monitor-btn').textContent = "STOP MONITOR";
+                document.getElementById('monitor-btn').className = "px-10 py-4 bg-red-600 text-white rounded-2xl font-bold text-lg";
+                addLog(`Backend monitoring already running for @${currentUsername}`, "active");
+                await fetchProfile();
+            } catch (e) {
+                // Backend may still be starting; no UI action needed.
+            }
+        }
+
+        async function checkStatus() {
+            try {
+                const res = await fetch('/api/check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: currentUsername })
+                });
+                const data = await res.json();
+
+                if (data.exists) {
+                    updateStatus("ACTIVE");
+                    addLog(`@${currentUsername} → ACTIVE`, "active");
+                } else {
+                    updateStatus("BANNED");
+                    addLog(`@${currentUsername} → BANNED`, "banned");
+                }
+            } catch (e) {
+                addLog("API error", "banned");
+            }
+        }
+
+        // The actual monitoring runs on the backend, independent of this page.
+        restoreBackendMonitor();
+    </script>
+</body>
+</html>
