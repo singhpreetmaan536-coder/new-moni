@@ -1,2815 +1,2189 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Instagram Monitor</title>
-
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-  >
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      min-height: 100%;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #050008;
-      color: white;
-    }
-
-    body {
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
-    }
-
-    /* =====================================================
-       ANIME BACKGROUND
-       Put anime.jpg inside public/
-       ===================================================== */
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: -6%;
-      z-index: -5;
-
-      background-image: url("./anime.jpg");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-
-      transform: scale(1.08);
-
-      animation: animeZoom 18s ease-in-out infinite alternate;
-    }
-
-    /* Dark purple/black overlay */
-
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: -4;
-
-      background:
-        radial-gradient(
-          circle at 15% 20%,
-          rgba(168, 85, 247, 0.28),
-          transparent 32%
-        ),
-        radial-gradient(
-          circle at 85% 75%,
-          rgba(126, 34, 206, 0.25),
-          transparent 35%
-        ),
-        linear-gradient(
-          135deg,
-          rgba(0, 0, 0, 0.94),
-          rgba(30, 0, 50, 0.72),
-          rgba(0, 0, 0, 0.94)
-        );
-    }
-
-    @keyframes animeZoom {
-      0% {
-        transform: scale(1.08) translate3d(0, 0, 0);
-      }
-
-      50% {
-        transform: scale(1.13) translate3d(-1%, 1%, 0);
-      }
-
-      100% {
-        transform: scale(1.08) translate3d(1%, -1%, 0);
-      }
-    }
-
-    /* =====================================================
-       FLOATING PURPLE LIGHTS
-       ===================================================== */
-
-    .bg-light {
-      position: fixed;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: -3;
-      filter: blur(85px);
-      opacity: 0.25;
-    }
-
-    .bg-light.one {
-      width: 250px;
-      height: 250px;
-      background: #a855f7;
-      top: 5%;
-      left: -100px;
-      animation: floatOne 10s ease-in-out infinite;
-    }
-
-    .bg-light.two {
-      width: 300px;
-      height: 300px;
-      background: #7e22ce;
-      right: -120px;
-      bottom: 10%;
-      animation: floatTwo 12s ease-in-out infinite;
-    }
-
-    .bg-light.three {
-      width: 180px;
-      height: 180px;
-      background: #c026d3;
-      left: 45%;
-      top: 40%;
-      animation: floatThree 8s ease-in-out infinite;
-    }
-
-    @keyframes floatOne {
-      0%, 100% {
-        transform: translate(0, 0);
-      }
-
-      50% {
-        transform: translate(80px, 100px);
-      }
-    }
-
-    @keyframes floatTwo {
-      0%, 100% {
-        transform: translate(0, 0);
-      }
-
-      50% {
-        transform: translate(-100px, -70px);
-      }
-    }
-
-    @keyframes floatThree {
-      0%, 100% {
-        transform: scale(1);
-        opacity: 0.12;
-      }
-
-      50% {
-        transform: scale(1.5);
-        opacity: 0.28;
-      }
-    }
-
-    /* =====================================================
-       MAIN
-       ===================================================== */
-
-    .app-container {
-      width: min(1150px, 94%);
-      margin: 0 auto;
-      padding: 35px 0 60px;
-    }
-
-    /* =====================================================
-       HEADER
-       ===================================================== */
-
-    .main-header {
-      position: relative;
-      overflow: hidden;
-
-      background: rgba(8, 2, 15, 0.78);
-
-      border: 1px solid rgba(168, 85, 247, 0.35);
-
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-
-      border-radius: 24px;
-
-      padding: 25px;
-
-      box-shadow:
-        0 0 40px rgba(168, 85, 247, 0.12),
-        inset 0 0 30px rgba(168, 85, 247, 0.04);
-
-      animation: headerAppear 0.8s ease-out;
-    }
-
-    .main-header::before {
-      content: "";
-      position: absolute;
-
-      top: 0;
-      left: -100%;
-
-      width: 100%;
-      height: 2px;
-
-      background: linear-gradient(
-        90deg,
-        transparent,
-        #7e22ce,
-        #c084fc,
-        #a855f7,
-        transparent
-      );
-
-      animation: headerLine 4s linear infinite;
-    }
-
-    @keyframes headerLine {
-      0% {
-        left: -100%;
-      }
-
-      100% {
-        left: 100%;
-      }
-    }
-
-    @keyframes headerAppear {
-      from {
-        opacity: 0;
-        transform: translateY(-25px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .title-glow {
-      text-shadow:
-        0 0 10px rgba(168, 85, 247, 0.8),
-        0 0 25px rgba(168, 85, 247, 0.4);
-    }
-
-    /* =====================================================
-       ADD BUTTON
-       ===================================================== */
-
-    .add-btn {
-      width: 48px;
-      height: 48px;
-
-      border-radius: 15px;
-
-      border: 1px solid rgba(216, 180, 254, 0.45);
-
-      background: linear-gradient(
-        135deg,
-        rgba(126, 34, 206, 0.9),
-        rgba(168, 85, 247, 0.65)
-      );
-
-      color: white;
-      cursor: pointer;
-
-      box-shadow:
-        0 0 15px rgba(168, 85, 247, 0.35),
-        inset 0 0 15px rgba(255, 255, 255, 0.08);
-
-      transition: all 0.25s ease;
-    }
-
-    .add-btn:hover {
-      transform: translateY(-3px) rotate(90deg) scale(1.08);
-
-      box-shadow:
-        0 0 30px rgba(168, 85, 247, 0.65),
-        0 0 60px rgba(126, 34, 206, 0.25);
-    }
-
-    .add-btn:active {
-      transform: scale(0.94);
-    }
-
-    /* =====================================================
-       MONITOR CARD
-       ===================================================== */
-
-    .monitor-card {
-      position: relative;
-      overflow: hidden;
-
-      margin-top: 20px;
-
-      background:
-        linear-gradient(
-          145deg,
-          rgba(9, 3, 16, 0.90),
-          rgba(28, 5, 42, 0.80)
-        );
-
-      border: 1px solid rgba(168, 85, 247, 0.28);
-
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-
-      border-radius: 22px;
-
-      box-shadow:
-        0 10px 45px rgba(0, 0, 0, 0.35),
-        0 0 25px rgba(126, 34, 206, 0.08);
-
-      animation: cardAppear 0.5s ease-out;
-
-      transition:
-        border-color 0.3s ease,
-        box-shadow 0.3s ease,
-        transform 0.3s ease;
-    }
-
-    .monitor-card:hover {
-      border-color: rgba(168, 85, 247, 0.6);
-
-      box-shadow:
-        0 15px 55px rgba(0, 0, 0, 0.45),
-        0 0 35px rgba(168, 85, 247, 0.14);
-    }
-
-    @keyframes cardAppear {
-      from {
-        opacity: 0;
-        transform: translateY(25px) scale(0.97);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    /* =====================================================
-       MONITOR HEADER
-       ===================================================== */
-
-    .monitor-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      padding: 18px 20px;
-
-      cursor: pointer;
-
-      background:
-        linear-gradient(
-          90deg,
-          rgba(168, 85, 247, 0.08),
-          rgba(0, 0, 0, 0.05)
-        );
-
-      border-bottom: 1px solid rgba(168, 85, 247, 0.12);
-
-      transition: background 0.3s ease;
-    }
-
-    .monitor-header:hover {
-      background:
-        linear-gradient(
-          90deg,
-          rgba(168, 85, 247, 0.16),
-          rgba(0, 0, 0, 0.08)
-        );
-    }
-
-    /* =====================================================
-       COLLAPSE ANIMATION
-       ===================================================== */
-
-    .monitor-body {
-      padding: 20px;
-
-      max-height: 1400px;
-      opacity: 1;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-      transition:
-        max-height 0.45s ease,
-        opacity 0.3s ease,
-        padding 0.45s ease;
-    }
-
-    .monitor-card.minimized .monitor-body {
-      max-height: 0;
-      padding-top: 0;
-      padding-bottom: 0;
-      opacity: 0;
-      overflow: hidden;
-    }
-
-    .monitor-card.minimized .chevron {
-      transform: rotate(-90deg);
-    }
-
-    .chevron {
-      transition: transform 0.35s ease;
-    }
+    <title>Instagram Ban Monitor</title>
 
-    /* =====================================================
-       INPUT
-       ===================================================== */
-
-    .username-input {
-      width: 100%;
-
-      background: rgba(0, 0, 0, 0.55);
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-      border: 1px solid rgba(168, 85, 247, 0.28);
-
-      color: white;
-
-      border-radius: 13px;
-
-      padding: 13px 15px;
-
-      outline: none;
-
-      transition: all 0.25s ease;
-    }
-
-    .username-input::placeholder {
-      color: rgba(255, 255, 255, 0.35);
-    }
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    >
 
-    .username-input:focus {
-      border-color: #a855f7;
+    <style>
 
-      box-shadow:
-        0 0 0 3px rgba(168, 85, 247, 0.10),
-        0 0 25px rgba(168, 85, 247, 0.18);
+        * {
+            box-sizing: border-box;
+        }
 
-      background: rgba(10, 0, 18, 0.75);
-    }
+        html {
+            scroll-behavior: smooth;
+        }
 
-    /* =====================================================
-       BUTTON
-       ===================================================== */
+        body {
+            margin: 0;
+            min-height: 100vh;
 
-    .purple-btn {
-      position: relative;
-      overflow: hidden;
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
 
-      border: 1px solid rgba(216, 180, 254, 0.25);
+            color: white;
 
-      background:
-        linear-gradient(
-          135deg,
-          #7e22ce,
-          #a855f7
-        );
+            background:
+                #050008;
 
-      color: white;
+            overflow-x: hidden;
+        }
 
-      border-radius: 13px;
 
-      padding: 12px 18px;
+        /* =====================================================
+           ANIME BACKGROUND
+           Put anime.jpg inside public/
+           ===================================================== */
 
-      font-weight: 700;
+        body::before {
+            content: "";
 
-      cursor: pointer;
+            position: fixed;
+            inset: -8%;
 
-      transition: all 0.25s ease;
+            z-index: -10;
 
-      box-shadow:
-        0 5px 20px rgba(126, 34, 206, 0.25);
-    }
+            background-image:
+                url("./anime.jpg");
 
-    .purple-btn::before {
-      content: "";
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
 
-      position: absolute;
+            transform: scale(1.08);
 
-      top: 0;
-      left: -120%;
+            animation:
+                animeMove
+                18s
+                ease-in-out
+                infinite
+                alternate;
+        }
 
-      width: 80%;
-      height: 100%;
 
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.22),
-        transparent
-      );
+        @keyframes animeMove {
 
-      transform: skewX(-20deg);
+            0% {
+                transform:
+                    scale(1.08)
+                    translate3d(0, 0, 0);
+            }
 
-      transition: left 0.5s ease;
-    }
+            50% {
+                transform:
+                    scale(1.13)
+                    translate3d(-1%, 1%, 0);
+            }
 
-    .purple-btn:hover::before {
-      left: 140%;
-    }
+            100% {
+                transform:
+                    scale(1.08)
+                    translate3d(1%, -1%, 0);
+            }
 
-    .purple-btn:hover {
-      transform: translateY(-2px);
+        }
 
-      box-shadow:
-        0 8px 30px rgba(168, 85, 247, 0.42),
-        0 0 20px rgba(168, 85, 247, 0.15);
-    }
 
-    .purple-btn:active {
-      transform: scale(0.97);
-    }
+        /* =====================================================
+           DARK + PURPLE OVERLAY
+           ===================================================== */
 
-    .purple-btn:disabled {
-      opacity: 0.65;
-      cursor: wait;
-      transform: none;
-    }
+        body::after {
+            content: "";
 
-    /* =====================================================
-       STATUS
-       ===================================================== */
+            position: fixed;
+            inset: 0;
 
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+            z-index: -9;
 
-      padding: 6px 10px;
+            background:
+                radial-gradient(
+                    circle at 15% 15%,
+                    rgba(168, 85, 247, 0.28),
+                    transparent 30%
+                ),
 
-      border-radius: 999px;
+                radial-gradient(
+                    circle at 85% 80%,
+                    rgba(126, 34, 206, 0.25),
+                    transparent 32%
+                ),
 
-      font-size: 12px;
-      font-weight: 700;
+                linear-gradient(
+                    135deg,
+                    rgba(0, 0, 0, 0.93),
+                    rgba(25, 0, 45, 0.72),
+                    rgba(0, 0, 0, 0.94)
+                );
+        }
 
-      border: 1px solid rgba(255, 255, 255, 0.1);
 
-      transition: all 0.3s ease;
-    }
+        /* =====================================================
+           FLOATING PURPLE GLOW
+           ===================================================== */
 
-    .status-active {
-      color: #86efac;
+        .glow {
+            position: fixed;
 
-      background: rgba(34, 197, 94, 0.10);
+            border-radius: 50%;
 
-      border-color: rgba(34, 197, 94, 0.25);
+            pointer-events: none;
 
-      box-shadow:
-        0 0 15px rgba(34, 197, 94, 0.08);
-    }
+            z-index: -5;
 
-    .status-banned {
-      color: #fca5a5;
+            filter: blur(90px);
 
-      background: rgba(239, 68, 68, 0.10);
+            opacity: 0.25;
+        }
 
-      border-color: rgba(239, 68, 68, 0.25);
 
-      box-shadow:
-        0 0 15px rgba(239, 68, 68, 0.08);
-    }
+        .glow-one {
+            width: 260px;
+            height: 260px;
 
-    .status-unknown {
-      color: #d8b4fe;
+            background: #a855f7;
 
-      background: rgba(168, 85, 247, 0.10);
+            top: -80px;
+            left: -100px;
 
-      border-color: rgba(168, 85, 247, 0.25);
-    }
+            animation:
+                floatOne
+                10s
+                ease-in-out
+                infinite;
+        }
 
-    /* =====================================================
-       PROFILE
-       ===================================================== */
 
-    .profile-image {
-      width: 100px;
-      height: 100px;
+        .glow-two {
+            width: 320px;
+            height: 320px;
 
-      object-fit: cover;
+            background: #7e22ce;
 
-      border-radius: 50%;
+            right: -120px;
+            bottom: -80px;
 
-      border: 3px solid rgba(168, 85, 247, 0.65);
+            animation:
+                floatTwo
+                12s
+                ease-in-out
+                infinite;
+        }
 
-      box-shadow:
-        0 0 20px rgba(168, 85, 247, 0.25),
-        0 0 45px rgba(126, 34, 206, 0.10);
 
-      animation: profileGlow 3s ease-in-out infinite;
-    }
+        .glow-three {
+            width: 180px;
+            height: 180px;
 
-    @keyframes profileGlow {
-      0%, 100% {
-        box-shadow:
-          0 0 20px rgba(168, 85, 247, 0.25),
-          0 0 45px rgba(126, 34, 206, 0.10);
-      }
+            background: #c026d3;
 
-      50% {
-        box-shadow:
-          0 0 30px rgba(168, 85, 247, 0.55),
-          0 0 60px rgba(126, 34, 206, 0.18);
-      }
-    }
+            left: 45%;
+            top: 40%;
 
-    /* =====================================================
-       PROFILE SECTION ANIMATION
-       ===================================================== */
+            animation:
+                floatThree
+                8s
+                ease-in-out
+                infinite;
+        }
 
-    .profile-section:not(.hidden) {
-      animation: profileAppear 0.5s ease-out;
-    }
 
-    @keyframes profileAppear {
-      from {
-        opacity: 0;
-        transform: translateY(15px);
-      }
+        @keyframes floatOne {
 
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+            0%,
+            100% {
+                transform:
+                    translate(0, 0);
+            }
 
-    /* =====================================================
-       STATS
-       ===================================================== */
+            50% {
+                transform:
+                    translate(100px, 100px);
+            }
 
-    .stat-box {
-      background: rgba(0, 0, 0, 0.30);
+        }
 
-      border: 1px solid rgba(168, 85, 247, 0.15);
 
-      border-radius: 15px;
+        @keyframes floatTwo {
 
-      padding: 15px;
+            0%,
+            100% {
+                transform:
+                    translate(0, 0);
+            }
 
-      transition: all 0.25s ease;
-    }
+            50% {
+                transform:
+                    translate(-100px, -80px);
+            }
 
-    .stat-box:hover {
-      transform: translateY(-3px);
+        }
 
-      border-color: rgba(168, 85, 247, 0.40);
 
-      background: rgba(168, 85, 247, 0.08);
+        @keyframes floatThree {
 
-      box-shadow:
-        0 10px 25px rgba(0, 0, 0, 0.25),
-        0 0 20px rgba(168, 85, 247, 0.08);
-    }
+            0%,
+            100% {
+                transform:
+                    scale(1);
 
-    /* =====================================================
-       TIMER
-       ===================================================== */
+                opacity: 0.12;
+            }
 
-    .timer {
-      font-family: monospace;
+            50% {
+                transform:
+                    scale(1.5);
 
-      color: #d8b4fe;
+                opacity: 0.28;
+            }
 
-      text-shadow:
-        0 0 10px rgba(168, 85, 247, 0.35);
-    }
+        }
 
-    /* =====================================================
-       DELETE
-       ===================================================== */
 
-    .delete-btn {
-      width: 35px;
-      height: 35px;
+        /* =====================================================
+           CONTAINER
+           ===================================================== */
 
-      border-radius: 10px;
+        .main-container {
+            width: min(850px, 94%);
 
-      border: 1px solid rgba(239, 68, 68, 0.15);
+            margin: auto;
 
-      background: rgba(239, 68, 68, 0.08);
+            padding:
+                35px
+                0
+                60px;
+        }
 
-      color: #fca5a5;
 
-      cursor: pointer;
+        /* =====================================================
+           HEADER
+           ===================================================== */
 
-      transition: all 0.25s ease;
-    }
+        .main-header {
+            text-align: center;
 
-    .delete-btn:hover {
-      background: rgba(239, 68, 68, 0.18);
+            margin-bottom: 30px;
 
-      border-color: rgba(239, 68, 68, 0.35);
+            animation:
+                headerEnter
+                0.8s
+                ease-out;
+        }
 
-      transform: scale(1.08) rotate(5deg);
 
-      box-shadow:
-        0 0 20px rgba(239, 68, 68, 0.12);
-    }
+        @keyframes headerEnter {
 
-    /* =====================================================
-       PULSE
-       ===================================================== */
+            from {
+                opacity: 0;
+                transform:
+                    translateY(-25px);
+            }
 
-    .pulse-dot {
-      width: 8px;
-      height: 8px;
+            to {
+                opacity: 1;
+                transform:
+                    translateY(0);
+            }
 
-      border-radius: 50%;
+        }
 
-      background: #a855f7;
 
-      box-shadow:
-        0 0 0 0 rgba(168, 85, 247, 0.65);
+        .logo {
+            display: inline-flex;
 
-      animation: pulsePurple 1.8s infinite;
-    }
+            align-items: center;
+            justify-content: center;
 
-    @keyframes pulsePurple {
-      0% {
-        box-shadow:
-          0 0 0 0 rgba(168, 85, 247, 0.65);
-      }
+            width: 70px;
+            height: 70px;
 
-      70% {
-        box-shadow:
-          0 0 0 10px rgba(168, 85, 247, 0);
-      }
+            margin-bottom: 15px;
 
-      100% {
-        box-shadow:
-          0 0 0 0 rgba(168, 85, 247, 0);
-      }
-    }
+            border-radius: 22px;
 
-    /* =====================================================
-       SCROLLBAR
-       ===================================================== */
+            background:
+                linear-gradient(
+                    135deg,
+                    #7e22ce,
+                    #a855f7
+                );
 
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
+            box-shadow:
+                0 0 25px
+                rgba(168, 85, 247, 0.45);
 
-    ::-webkit-scrollbar-track {
-      background: #050008;
-    }
+            animation:
+                logoPulse
+                3s
+                ease-in-out
+                infinite;
+        }
 
-    ::-webkit-scrollbar-thumb {
-      background: linear-gradient(
-        #7e22ce,
-        #a855f7
-      );
 
-      border-radius: 10px;
-    }
+        @keyframes logoPulse {
 
-    ::-webkit-scrollbar-thumb:hover {
-      background: #c084fc;
-    }
+            0%,
+            100% {
+                box-shadow:
+                    0 0 20px
+                    rgba(168, 85, 247, 0.35);
+            }
 
-    /* =====================================================
-       MOBILE
-       ===================================================== */
+            50% {
+                box-shadow:
+                    0 0 40px
+                    rgba(168, 85, 247, 0.65);
+            }
 
-    @media (max-width: 640px) {
+        }
 
-      .app-container {
-        width: 94%;
-        padding-top: 18px;
-      }
 
-      .main-header {
-        padding: 18px;
-        border-radius: 18px;
-      }
+        .main-title {
+            font-size:
+                clamp(28px, 5vw, 44px);
 
-      .monitor-card {
-        border-radius: 18px;
-      }
+            font-weight: 900;
 
-      .monitor-header {
-        padding: 15px;
-      }
+            letter-spacing: -1px;
 
-      .monitor-body {
-        padding: 15px;
-      }
+            text-shadow:
+                0 0 12px
+                rgba(168, 85, 247, 0.8),
 
-      .profile-image {
-        width: 80px;
-        height: 80px;
-      }
-    }
-  </style>
+                0 0 30px
+                rgba(168, 85, 247, 0.35);
+        }
+
+
+        .subtitle {
+            margin-top: 8px;
+
+            color:
+                rgba(216, 180, 254, 0.7);
+
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           GLASS CARD
+           ===================================================== */
+
+        .glass-card {
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(8, 3, 15, 0.88),
+                    rgba(25, 5, 38, 0.78)
+                );
+
+            border:
+                1px solid
+                rgba(168, 85, 247, 0.28);
+
+            backdrop-filter:
+                blur(18px);
+
+            -webkit-backdrop-filter:
+                blur(18px);
+
+            border-radius:
+                25px;
+
+            box-shadow:
+                0 20px 60px
+                rgba(0, 0, 0, 0.45),
+
+                0 0 35px
+                rgba(126, 34, 206, 0.08);
+
+            transition:
+                border-color
+                0.3s ease,
+
+                box-shadow
+                0.3s ease,
+
+                transform
+                0.3s ease;
+        }
+
+
+        .glass-card:hover {
+            border-color:
+                rgba(168, 85, 247, 0.5);
+
+            box-shadow:
+                0 25px 70px
+                rgba(0, 0, 0, 0.5),
+
+                0 0 45px
+                rgba(168, 85, 247, 0.12);
+        }
+
+
+        /* =====================================================
+           INPUT
+           ===================================================== */
+
+        #username {
+            background:
+                rgba(0, 0, 0, 0.55);
+
+            border:
+                1px solid
+                rgba(168, 85, 247, 0.28);
+
+            color: white;
+
+            transition:
+                all 0.25s ease;
+        }
+
+
+        #username::placeholder {
+            color:
+                rgba(255, 255, 255, 0.35);
+        }
+
+
+        #username:focus {
+            border-color:
+                #a855f7;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(168, 85, 247, 0.1),
+
+                0 0 25px
+                rgba(168, 85, 247, 0.18);
+        }
+
+
+        /* =====================================================
+           PURPLE BUTTON
+           ===================================================== */
+
+        .purple-button {
+            position: relative;
+
+            overflow: hidden;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7e22ce,
+                    #a855f7
+                );
+
+            color: white;
+
+            border:
+                1px solid
+                rgba(216, 180, 254, 0.25);
+
+            box-shadow:
+                0 8px 25px
+                rgba(126, 34, 206, 0.25);
+
+            transition:
+                all 0.25s ease;
+        }
+
+
+        .purple-button::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: -120%;
+
+            width: 80%;
+            height: 100%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255,255,255,0.22),
+                    transparent
+                );
+
+            transform:
+                skewX(-20deg);
+
+            transition:
+                left 0.5s ease;
+        }
+
+
+        .purple-button:hover::before {
+            left: 140%;
+        }
+
+
+        .purple-button:hover {
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 12px 35px
+                rgba(168, 85, 247, 0.45);
+        }
+
+
+        .purple-button:active {
+            transform:
+                scale(0.97);
+        }
+
+
+        /* =====================================================
+           PROFILE CARD
+           ===================================================== */
+
+        #profile-card {
+            animation:
+                profileEnter
+                0.5s
+                ease-out;
+        }
+
+
+        @keyframes profileEnter {
+
+            from {
+                opacity: 0;
+
+                transform:
+                    translateY(20px)
+                    scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+
+        }
+
+
+        #pfp {
+            border-color:
+                #a855f7 !important;
+
+            box-shadow:
+                0 0 25px
+                rgba(168, 85, 247, 0.3);
+
+            animation:
+                pfpGlow
+                3s
+                ease-in-out
+                infinite;
+        }
+
+
+        @keyframes pfpGlow {
+
+            0%,
+            100% {
+                box-shadow:
+                    0 0 20px
+                    rgba(168, 85, 247, 0.25);
+            }
+
+            50% {
+                box-shadow:
+                    0 0 40px
+                    rgba(168, 85, 247, 0.6);
+            }
+
+        }
+
+
+        /* =====================================================
+           STATS
+           ===================================================== */
+
+        .stat-box {
+            background:
+                rgba(0, 0, 0, 0.4);
+
+            border:
+                1px solid
+                rgba(168, 85, 247, 0.15);
+
+            border-radius:
+                16px;
+
+            transition:
+                all 0.25s ease;
+        }
+
+
+        .stat-box:hover {
+            transform:
+                translateY(-4px);
+
+            background:
+                rgba(168, 85, 247, 0.08);
+
+            border-color:
+                rgba(168, 85, 247, 0.4);
+
+            box-shadow:
+                0 10px 30px
+                rgba(0, 0, 0, 0.3),
+
+                0 0 20px
+                rgba(168, 85, 247, 0.1);
+        }
+
+
+        /* =====================================================
+           STATUS
+           ===================================================== */
+
+        .status-active {
+            color:
+                #4ade80;
+
+            text-shadow:
+                0 0 10px
+                rgba(74, 222, 128, 0.8),
+
+                0 0 25px
+                rgba(74, 222, 128, 0.35);
+        }
+
+
+        .status-banned {
+            color:
+                #f87171;
+
+            text-shadow:
+                0 0 10px
+                rgba(248, 113, 113, 0.8),
+
+                0 0 25px
+                rgba(248, 113, 113, 0.35);
+        }
+
+
+        /* =====================================================
+           MONITOR BUTTON
+           ===================================================== */
+
+        #monitor-btn {
+            transition:
+                all 0.25s ease;
+        }
+
+
+        #monitor-btn:hover {
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 0 30px
+                rgba(168, 85, 247, 0.35);
+        }
+
+
+        /* =====================================================
+           LIVE LOG
+           ===================================================== */
+
+        #log {
+            scrollbar-width:
+                thin;
+
+            scrollbar-color:
+                #a855f7
+                #08020d;
+        }
+
+
+        #log::-webkit-scrollbar {
+            width: 7px;
+        }
+
+
+        #log::-webkit-scrollbar-track {
+            background:
+                #08020d;
+        }
+
+
+        #log::-webkit-scrollbar-thumb {
+            background:
+                linear-gradient(
+                    #7e22ce,
+                    #a855f7
+                );
+
+            border-radius:
+                10px;
+        }
+
+
+        .log-card {
+            animation:
+                logEnter
+                0.4s
+                ease-out;
+        }
+
+
+        @keyframes logEnter {
+
+            from {
+                opacity: 0;
+                transform:
+                    translateX(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    translateX(0);
+            }
+
+        }
+
+
+        /* =====================================================
+           LIVE DOT
+           ===================================================== */
+
+        .live-dot {
+            display: inline-block;
+
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+
+            background:
+                #a855f7;
+
+            box-shadow:
+                0 0 0 0
+                rgba(168, 85, 247, 0.7);
+
+            animation:
+                livePulse
+                1.8s
+                infinite;
+        }
+
+
+        @keyframes livePulse {
+
+            0% {
+                box-shadow:
+                    0 0 0 0
+                    rgba(168, 85, 247, 0.7);
+            }
+
+            70% {
+                box-shadow:
+                    0 0 0 10px
+                    rgba(168, 85, 247, 0);
+            }
+
+            100% {
+                box-shadow:
+                    0 0 0 0
+                    rgba(168, 85, 247, 0);
+            }
+
+        }
+
+
+        /* =====================================================
+           SCROLLBAR
+           ===================================================== */
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+
+        ::-webkit-scrollbar-track {
+            background:
+                #050008;
+        }
+
+
+        ::-webkit-scrollbar-thumb {
+            background:
+                linear-gradient(
+                    #7e22ce,
+                    #a855f7
+                );
+
+            border-radius:
+                10px;
+        }
+
+
+        /* =====================================================
+           MOBILE
+           ===================================================== */
+
+        @media (max-width: 640px) {
+
+            .main-container {
+                width: 94%;
+
+                padding-top:
+                    20px;
+            }
+
+
+            .glass-card {
+                border-radius:
+                    20px;
+            }
+
+
+            #profile-card
+            .flex {
+                gap: 15px;
+            }
+
+
+            #pfp {
+                width: 90px;
+                height: 90px;
+            }
+
+
+            #monitor-btn {
+                padding:
+                    12px 18px;
+
+                font-size:
+                    14px;
+            }
+
+        }
+
+    </style>
 </head>
+
 
 <body>
 
-  <!-- Animated purple lights -->
-  <div class="bg-light one"></div>
-  <div class="bg-light two"></div>
-  <div class="bg-light three"></div>
+    <!-- Floating purple lights -->
+
+    <div class="glow glow-one"></div>
+    <div class="glow glow-two"></div>
+    <div class="glow glow-three"></div>
 
 
-  <div class="app-container">
+    <div class="main-container">
 
-    <!-- ===================================================
-         MAIN HEADER
-         =================================================== -->
+        <!-- =================================================
+             HEADER
+             ================================================== -->
 
-    <div class="main-header">
+        <div class="main-header">
 
-      <div class="flex items-center justify-between gap-4">
+            <div class="logo">
 
-        <div>
+                <i
+                    class="fab fa-instagram text-4xl"
+                ></i>
 
-          <div class="flex items-center gap-3">
+            </div>
 
-            <div
-              class="w-12 h-12 rounded-2xl flex items-center justify-center"
-              style="
-                background: linear-gradient(
-                  135deg,
-                  rgba(126,34,206,.9),
-                  rgba(168,85,247,.7)
-                );
-                box-shadow:
-                  0 0 25px rgba(168,85,247,.3);
-              "
+
+            <h1
+                class="main-title"
             >
-              <i
-                class="fa-brands fa-instagram text-2xl"
-              ></i>
-            </div>
+                Instagram Ban Monitor
+            </h1>
 
-            <div>
 
-              <h1
-                class="text-2xl sm:text-3xl font-black title-glow"
-              >
-                Instagram Monitor
-              </h1>
-
-              <div
-                class="flex items-center gap-2 mt-1 text-sm text-purple-200/70"
-              >
-
-                <span class="pulse-dot"></span>
-
-                <span>
-                  <span id="monitor-count">0</span>
-                  active monitors
-                </span>
-
-              </div>
-
-            </div>
-
-          </div>
+            <p
+                class="subtitle"
+            >
+                Real-time ban / unban detection
+            </p>
 
         </div>
 
 
-        <button
-          id="add-monitor-btn"
-          class="add-btn"
-          title="Add Monitor"
-        >
-          <i class="fa-solid fa-plus text-lg"></i>
-        </button>
+        <!-- =================================================
+             USERNAME INPUT
+             ================================================== -->
 
-      </div>
+        <div
+            class="
+                glass-card
+                p-6
+                sm:p-8
+                mb-8
+            "
+        >
+
+            <label
+                class="
+                    block
+                    text-sm
+                    text-purple-200/70
+                    mb-2
+                    font-semibold
+                "
+            >
+                USERNAME
+            </label>
+
+
+            <div
+                class="
+                    flex
+                    flex-col
+                    sm:flex-row
+                    gap-3
+                "
+            >
+
+                <input
+                    id="username"
+                    type="text"
+                    placeholder="@username"
+
+                    class="
+                        flex-1
+                        rounded-2xl
+                        px-6
+                        py-4
+                        text-lg
+                        outline-none
+                    "
+                >
+
+
+                <button
+                    onclick="fetchProfile()"
+
+                    class="
+                        purple-button
+                        px-8
+                        py-4
+                        rounded-2xl
+                        font-bold
+                        text-white
+                    "
+                >
+
+                    <i
+                        class="
+                            fas
+                            fa-search
+                            mr-2
+                        "
+                    ></i>
+
+                    CHECK PROFILE
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             PROFILE CARD
+             ================================================== -->
+
+        <div
+            id="profile-card"
+
+            class="
+                hidden
+                glass-card
+                p-6
+                sm:p-8
+                mb-8
+            "
+        >
+
+            <div
+                class="
+                    flex
+                    flex-col
+                    sm:flex-row
+                    gap-6
+                    items-center
+                    sm:items-start
+                "
+            >
+
+                <!-- Profile picture -->
+
+                <img
+                    id="pfp"
+
+                    src=""
+
+                    class="
+                        w-28
+                        h-28
+                        rounded-2xl
+                        object-cover
+                        border-4
+                    "
+
+                    onerror="
+                        this.src='https://via.placeholder.com/150?text=No+Image'
+                    "
+                >
+
+
+                <!-- Profile details -->
+
+                <div
+                    class="
+                        flex-1
+                        w-full
+                        text-center
+                        sm:text-left
+                    "
+                >
+
+                    <h2
+                        id="fullname"
+
+                        class="
+                            text-2xl
+                            font-bold
+                            text-white
+                        "
+                    ></h2>
+
+
+                    <p
+                        id="user"
+
+                        class="
+                            text-purple-400
+                            text-lg
+                            font-semibold
+                        "
+                    ></p>
+
+
+                    <p
+                        id="bio"
+
+                        class="
+                            text-zinc-400
+                            text-sm
+                            mt-2
+                            whitespace-pre-wrap
+                        "
+                    ></p>
+
+
+                    <!-- =====================================
+                         STATS
+                         ====================================== -->
+
+                    <div
+                        class="
+                            grid
+                            grid-cols-3
+                            gap-3
+                            sm:gap-4
+                            mt-5
+                            text-center
+                        "
+                    >
+
+                        <!-- Followers -->
+
+                        <div
+                            class="
+                                stat-box
+                                p-3
+                            "
+                        >
+
+                            <div
+                                id="followers"
+
+                                class="
+                                    text-xl
+                                    font-bold
+                                    text-purple-300
+                                "
+                            >
+                                0
+                            </div>
+
+
+                            <div
+                                class="
+                                    text-xs
+                                    text-zinc-500
+                                    mt-1
+                                "
+                            >
+                                Followers
+                            </div>
+
+                        </div>
+
+
+                        <!-- Following -->
+
+                        <div
+                            class="
+                                stat-box
+                                p-3
+                            "
+                        >
+
+                            <div
+                                id="following"
+
+                                class="
+                                    text-xl
+                                    font-bold
+                                    text-purple-300
+                                "
+                            >
+                                0
+                            </div>
+
+
+                            <div
+                                class="
+                                    text-xs
+                                    text-zinc-500
+                                    mt-1
+                                "
+                            >
+                                Following
+                            </div>
+
+                        </div>
+
+
+                        <!-- Posts -->
+
+                        <div
+                            class="
+                                stat-box
+                                p-3
+                            "
+                        >
+
+                            <div
+                                id="posts"
+
+                                class="
+                                    text-xl
+                                    font-bold
+                                    text-purple-300
+                                "
+                            >
+                                0
+                            </div>
+
+
+                            <div
+                                class="
+                                    text-xs
+                                    text-zinc-500
+                                    mt-1
+                                "
+                            >
+                                Posts
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 STATUS + MONITOR BUTTON
+                 ================================================== -->
+
+            <div
+                class="
+                    mt-8
+                    flex
+                    flex-col
+                    sm:flex-row
+                    items-start
+                    sm:items-center
+                    justify-between
+                    gap-5
+                "
+            >
+
+                <div>
+
+                    <div
+                        class="
+                            text-sm
+                            text-zinc-400
+                        "
+                    >
+                        CURRENT STATUS
+                    </div>
+
+
+                    <div
+                        id="status"
+
+                        class="
+                            text-3xl
+                            font-bold
+                            mt-1
+                        "
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <button
+                    id="monitor-btn"
+                    onclick="toggleMonitor()"
+
+                    class="
+                        purple-button
+                        px-8
+                        sm:px-10
+                        py-4
+                        rounded-2xl
+                        font-bold
+                        text-lg
+                        w-full
+                        sm:w-auto
+                    "
+                >
+
+                    <i
+                        class="
+                            fas
+                            fa-play
+                            mr-2
+                        "
+                    ></i>
+
+                    START MONITOR
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             LIVE MONITOR LOG
+             ================================================== -->
+
+        <div
+            class="
+                glass-card
+                p-6
+            "
+        >
+
+            <div
+                class="
+                    flex
+                    items-center
+                    justify-between
+                    mb-4
+                "
+            >
+
+                <h3
+                    class="
+                        text-sm
+                        font-semibold
+                        text-purple-300
+                    "
+                >
+
+                    <span
+                        class="live-dot mr-2"
+                    ></span>
+
+                    LIVE MONITOR LOG
+
+                </h3>
+
+
+                <span
+                    class="
+                        text-xs
+                        text-zinc-500
+                    "
+                >
+                    LIVE
+                </span>
+
+            </div>
+
+
+            <div
+                id="log"
+
+                class="
+                    h-56
+                    overflow-y-auto
+                    font-mono
+                    text-sm
+                    space-y-1
+                    rounded-xl
+                    p-3
+                "
+
+                style="
+                    background:
+                        rgba(0,0,0,.35);
+
+                    border:
+                        1px solid
+                        rgba(168,85,247,.10);
+                "
+            ></div>
+
+        </div>
 
     </div>
 
 
-    <!-- ===================================================
-         MONITOR LIST
-         =================================================== -->
+    <!-- =====================================================
+         JAVASCRIPT
+         ORIGINAL LOGIC
+         ===================================================== -->
 
-    <div id="monitor-list"></div>
+    <script>
 
-  </div>
+        let isMonitoring = false;
 
+        let monitorInterval = null;
 
-  <script>
+        let currentUsername = "";
 
-    /* =====================================================
-       MONITOR DATA
-       ===================================================== */
+        let lastStatus = "";
 
-    const monitors = new Map();
 
-    let monitorCounter = 0;
+        /* =================================================
+           LIVE LOG
+           ================================================= */
 
+        function addLog(
+            msg,
+            type = "normal"
+        ) {
 
-    /* =====================================================
-       CONSOLE LOGGING
-       Existing console logging preserved
-       ===================================================== */
+            const log =
+                document.getElementById(
+                    "log"
+                );
 
-    function addLog(message) {
-      console.log(message);
-    }
 
+            if (!log) {
+                console.log(msg);
+                return;
+            }
 
-    /* =====================================================
-       ESCAPE HTML
-       ===================================================== */
 
-    function escapeHtml(value) {
+            const time =
+                new Date()
+                    .toLocaleTimeString(
+                        "en-US",
+                        {
+                            hour12: false
+                        }
+                    );
 
-      return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
 
-    }
+            let color =
+                "text-zinc-300";
 
-
-    /* =====================================================
-       TIMER FORMAT
-       ===================================================== */
-
-    function formatElapsed(seconds) {
-
-      seconds =
-        Math.max(
-          0,
-          Number(seconds) || 0
-        );
-
-      const h =
-        Math.floor(seconds / 3600);
-
-      const m =
-        Math.floor(
-          (seconds % 3600) / 60
-        );
-
-      const s =
-        seconds % 60;
-
-      return [
-        String(h).padStart(2, "0"),
-        String(m).padStart(2, "0"),
-        String(s).padStart(2, "0")
-      ].join(":");
-
-    }
-
-
-    /* =====================================================
-       RENDER MONITOR CARD
-       ===================================================== */
-
-    function renderMonitorCard(
-      id,
-      data = {}
-    ) {
-
-      const username =
-        data.username || "";
-
-
-      const card =
-        document.createElement("div");
-
-
-      card.className =
-        "monitor-card";
-
-
-      card.id =
-        `monitor-${id}`;
-
-
-      card.dataset.id =
-        id;
-
-
-      card.innerHTML = `
-
-        <!-- HEADER -->
-
-        <div class="monitor-header">
-
-          <div
-            class="flex items-center gap-3 min-w-0"
-          >
-
-            <div
-              class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-              style="
-                background: rgba(168,85,247,.12);
-                border:
-                  1px solid
-                  rgba(168,85,247,.25);
-              "
-            >
-              <i
-                class="fa-brands fa-instagram text-purple-400"
-              ></i>
-            </div>
-
-
-            <div class="min-w-0">
-
-              <div
-                class="flex items-center gap-2"
-              >
-
-                <h2
-                  class="font-bold text-white truncate monitor-title"
-                >
-                  @${escapeHtml(
-                    username || "new monitor"
-                  )}
-                </h2>
-
-
-                <span
-                  class="
-                    status-badge
-                    status-unknown
-                    header-status
-                  "
-                >
-                  <span>UNKNOWN</span>
-                </span>
-
-              </div>
-
-
-              <div
-                class="flex items-center gap-3 mt-1"
-              >
-
-                <span
-                  class="timer text-xs"
-                >
-                  00:00:00
-                </span>
-
-                <span
-                  class="text-xs text-gray-500"
-                >
-                  monitoring time
-                </span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div
-            class="flex items-center gap-2 shrink-0"
-          >
-
-            <button
-              class="delete-btn"
-              title="Delete"
-              onclick="
-                event.stopPropagation();
-                removeMonitor(${id});
-              "
-            >
-              <i
-                class="fa-solid fa-trash text-xs"
-              ></i>
-            </button>
-
-
-            <i
-              class="
-                fa-solid
-                fa-chevron-down
-                chevron
-                text-purple-300/60
-              "
-            ></i>
-
-          </div>
-
-        </div>
-
-
-        <!-- BODY -->
-
-        <div class="monitor-body">
-
-          <!-- USERNAME -->
-
-          <div
-            class="
-              flex
-              flex-col
-              sm:flex-row
-              gap-3
-            "
-          >
-
-            <input
-              type="text"
-              class="
-                username-input
-                username-input-field
-              "
-              placeholder="Enter Instagram username"
-              value="${escapeHtml(username)}"
-            />
-
-
-            <button
-              class="
-                purple-btn
-                check-btn
-                sm:w-32
-              "
-            >
-              <i
-                class="
-                  fa-solid
-                  fa-magnifying-glass
-                  mr-2
-                "
-              ></i>
-
-              CHECK
-            </button>
-
-          </div>
-
-
-          <!-- PROFILE INFO -->
-
-          <div
-            class="
-              profile-section
-              hidden
-              mt-6
-            "
-          >
-
-            <div
-              class="
-                flex
-                flex-col
-                sm:flex-row
-                items-center
-                sm:items-start
-                gap-5
-              "
-            >
-
-              <!-- PROFILE PIC -->
-
-              <img
-                class="
-                  profile-image
-                  profile-pic
-                "
-                src=""
-                alt="Profile"
-              />
-
-
-              <!-- PROFILE DETAILS -->
-
-              <div
-                class="
-                  flex-1
-                  text-center
-                  sm:text-left
-                "
-              >
-
-                <h3
-                  class="
-                    text-xl
-                    font-bold
-                    profile-name
-                  "
-                >
-                  -
-                </h3>
-
-
-                <p
-                  class="
-                    text-purple-300
-                    text-sm
-                    profile-username
-                  "
-                >
-                  -
-                </p>
-
-
-                <p
-                  class="
-                    text-gray-400
-                    text-sm
-                    mt-2
-                    profile-bio
-                  "
-                >
-                  -
-                </p>
-
-              </div>
-
-            </div>
-
-
-            <!-- PROFILE STATS -->
-
-            <div
-              class="
-                grid
-                grid-cols-3
-                gap-3
-                mt-6
-              "
-            >
-
-              <div
-                class="
-                  stat-box
-                  text-center
-                "
-              >
-
-                <div
-                  class="
-                    text-lg
-                    font-bold
-                    profile-followers
-                  "
-                >
-                  0
-                </div>
-
-                <div
-                  class="
-                    text-xs
-                    text-gray-500
-                  "
-                >
-                  Followers
-                </div>
-
-              </div>
-
-
-              <div
-                class="
-                  stat-box
-                  text-center
-                "
-              >
-
-                <div
-                  class="
-                    text-lg
-                    font-bold
-                    profile-following
-                  "
-                >
-                  0
-                </div>
-
-                <div
-                  class="
-                    text-xs
-                    text-gray-500
-                  "
-                >
-                  Following
-                </div>
-
-              </div>
-
-
-              <div
-                class="
-                  stat-box
-                  text-center
-                "
-              >
-
-                <div
-                  class="
-                    text-lg
-                    font-bold
-                    profile-posts
-                  "
-                >
-                  0
-                </div>
-
-                <div
-                  class="
-                    text-xs
-                    text-gray-500
-                  "
-                >
-                  Posts
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <!-- CURRENT STATUS -->
-
-          <div class="mt-6">
-
-            <div
-              class="
-                flex
-                items-center
-                justify-between
-              "
-            >
-
-              <span
-                class="
-                  text-sm
-                  text-gray-400
-                "
-              >
-                Current Status
-              </span>
-
-
-              <span
-                class="
-                  status-badge
-                  status-unknown
-                  body-status
-                "
-              >
-                UNKNOWN
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <!-- MONITORING PANEL -->
-
-          <div
-            class="mt-4 p-4 rounded-xl"
-            style="
-              background:
-                rgba(168,85,247,.045);
-
-              border:
-                1px solid
-                rgba(168,85,247,.10);
-            "
-          >
-
-            <div
-              class="
-                flex
-                flex-col
-                sm:flex-row
-                sm:items-center
-                sm:justify-between
-                gap-3
-              "
-            >
-
-              <div>
-
-                <div
-                  class="
-                    text-sm
-                    font-semibold
-                    text-purple-200
-                  "
-                >
-                  Monitoring
-                </div>
-
-
-                <div
-                  class="
-                    text-xs
-                    text-gray-500
-                    mt-1
-                  "
-                >
-                  Time:
-
-                  <span
-                    class="
-                      monitoring-time
-                      timer
-                    "
-                  >
-                    00:00:00
-                  </span>
-
-                </div>
-
-              </div>
-
-
-              <button
-                class="
-                  purple-btn
-                  monitor-toggle-btn
-                "
-              >
-
-                <i
-                  class="
-                    fa-solid
-                    fa-play
-                    mr-2
-                  "
-                ></i>
-
-                START MONITOR
-
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-      `;
-
-
-      document
-        .getElementById("monitor-list")
-        .appendChild(card);
-
-
-      /* Header click */
-
-      card
-        .querySelector(".monitor-header")
-        .addEventListener(
-          "click",
-          () => {
-            toggleMinimize(id);
-          }
-        );
-
-
-      /* Check button */
-
-      card
-        .querySelector(".check-btn")
-        .addEventListener(
-          "click",
-          () => {
-            fetchProfile(id);
-          }
-        );
-
-
-      /* Enter key */
-
-      card
-        .querySelector(
-          ".username-input-field"
-        )
-        .addEventListener(
-          "keydown",
-          (event) => {
 
             if (
-              event.key === "Enter"
+                type === "banned"
             ) {
-              fetchProfile(id);
+
+                color =
+                    "text-red-400";
+
+            } else if (
+                type === "active"
+            ) {
+
+                color =
+                    "text-emerald-400";
+
+            } else if (
+                type === "purple"
+            ) {
+
+                color =
+                    "text-purple-300";
+
             }
 
-          }
-        );
+
+            const line =
+                document.createElement(
+                    "div"
+                );
 
 
-      /* Start / Stop */
-
-      card
-        .querySelector(
-          ".monitor-toggle-btn"
-        )
-        .addEventListener(
-          "click",
-          (event) => {
-
-            event.stopPropagation();
-
-            toggleMonitor(id);
-
-          }
-        );
+            line.className =
+                `${color} log-card`;
 
 
-      /* Store monitor */
-
-      monitors.set(
-        id,
-        {
-          id,
-
-          username,
-
-          startedAt:
-            data.startedAt || null,
-
-          monitoring:
-            data.monitoring || false,
-
-          lastStatus:
-            data.lastStatus ||
-            "UNKNOWN",
-
-          elapsedSeconds:
-            data.elapsedSeconds || 0
-        }
-      );
+            line.textContent =
+                `[${time}] ${msg}`;
 
 
-      setStatus(
-        id,
-        data.lastStatus ||
-        "UNKNOWN"
-      );
-
-
-      updateCount();
-
-
-      return card;
-
-    }
-
-
-    /* =====================================================
-       MINIMIZE / EXPAND
-       ===================================================== */
-
-    function toggleMinimize(id) {
-
-      const card =
-        document.getElementById(
-          `monitor-${id}`
-        );
-
-      if (!card) return;
-
-      card.classList.toggle(
-        "minimized"
-      );
-
-    }
-
-
-    function minimizeOthers(
-      currentId
-    ) {
-
-      monitors.forEach(
-        (monitor, id) => {
-
-          if (
-            id === currentId
-          ) {
-            return;
-          }
-
-
-          const card =
-            document.getElementById(
-              `monitor-${id}`
+            log.prepend(
+                line
             );
 
 
-          if (card) {
-            card.classList.add(
-              "minimized"
+            /* Browser console also */
+
+            console.log(
+                `[${time}] ${msg}`
             );
-          }
-
-        }
-      );
-
-    }
-
-
-    /* =====================================================
-       ADD MONITOR
-       ===================================================== */
-
-    function addMonitor(
-      data = {}
-    ) {
-
-      monitorCounter++;
-
-      const id =
-        monitorCounter;
-
-
-      minimizeOthers(id);
-
-
-      const card =
-        renderMonitorCard(
-          id,
-          data
-        );
-
-
-      card.classList.remove(
-        "minimized"
-      );
-
-
-      const input =
-        card.querySelector(
-          ".username-input-field"
-        );
-
-
-      if (!data.username) {
-
-        setTimeout(
-          () => input.focus(),
-          100
-        );
-
-      }
-
-
-      updateCount();
-
-
-      return id;
-
-    }
-
-
-    /* =====================================================
-       COUNT
-       ===================================================== */
-
-    function updateCount() {
-
-      let count = 0;
-
-
-      monitors.forEach(
-        (monitor) => {
-
-          if (
-            monitor.monitoring
-          ) {
-            count++;
-          }
-
-        }
-      );
-
-
-      const element =
-        document.getElementById(
-          "monitor-count"
-        );
-
-
-      if (element) {
-
-        element.textContent =
-          count;
-
-      }
-
-    }
-
-
-    /* =====================================================
-       REMOVE MONITOR
-       ===================================================== */
-
-    async function removeMonitor(
-      id
-    ) {
-
-      const monitor =
-        monitors.get(id);
-
-
-      if (!monitor) {
-        return;
-      }
-
-
-      if (
-        monitor.monitoring &&
-        monitor.username
-      ) {
-
-        try {
-
-          await fetch(
-            "/api/monitor/stop",
-            {
-              method: "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body:
-                JSON.stringify({
-                  username:
-                    monitor.username
-                })
-            }
-          );
-
-        } catch (error) {
-
-          console.error(
-            error
-          );
 
         }
 
-      }
 
+        /* =================================================
+           STATUS
+           ================================================= */
 
-      monitors.delete(id);
-
-
-      const card =
-        document.getElementById(
-          `monitor-${id}`
-        );
-
-
-      if (card) {
-
-        card.style.opacity =
-          "0";
-
-        card.style.transform =
-          "translateY(20px) scale(.95)";
-
-
-        setTimeout(
-          () => {
-
-            card.remove();
-
-            updateCount();
-
-          },
-          250
-        );
-
-      } else {
-
-        updateCount();
-
-      }
-
-    }
-
-
-    /* =====================================================
-       CHECK PROFILE
-       ===================================================== */
-
-    async function fetchProfile(
-      id
-    ) {
-
-      const monitor =
-        monitors.get(id);
-
-
-      const card =
-        document.getElementById(
-          `monitor-${id}`
-        );
-
-
-      if (
-        !monitor ||
-        !card
-      ) {
-        return;
-      }
-
-
-      const input =
-        card.querySelector(
-          ".username-input-field"
-        );
-
-
-      const username =
-        input.value
-          .trim()
-          .replace(
-            /^@/,
-            ""
-          );
-
-
-      if (!username) {
-
-        alert(
-          "Enter Instagram username"
-        );
-
-        return;
-
-      }
-
-
-      monitor.username =
-        username;
-
-
-      card
-        .querySelector(
-          ".monitor-title"
-        )
-        .textContent =
-        `@${username}`;
-
-
-      const button =
-        card.querySelector(
-          ".check-btn"
-        );
-
-
-      const originalHTML =
-        button.innerHTML;
-
-
-      button.innerHTML = `
-        <i
-          class="
-            fa-solid
-            fa-spinner
-            fa-spin
-            mr-2
-          "
-        ></i>
-        CHECKING
-      `;
-
-
-      button.disabled =
-        true;
-
-
-      /* Console */
-
-      console.log(
-        `[CHECK] Checking @${username}...`
-      );
-
-
-      try {
-
-        const response =
-          await fetch(
-            "/api/check",
-            {
-              method: "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body:
-                JSON.stringify({
-                  username
-                })
-            }
-          );
-
-
-        const data =
-          await response.json();
-
-
-        console.log(
-          `[CHECK] @${username} response:`,
-          data
-        );
-
-
-        if (data) {
-
-          const profileSection =
-            card.querySelector(
-              ".profile-section"
-            );
-
-
-          /* PROFILE PICTURE */
-
-          if (
-            data.profile_pic
-          ) {
-
-            const image =
-              card.querySelector(
-                ".profile-pic"
-              );
-
-
-            image.src =
-              data.profile_pic;
-
-
-            profileSection
-              .classList
-              .remove(
-                "hidden"
-              );
-
-          }
-
-
-          /* FULL NAME */
-
-          card
-            .querySelector(
-              ".profile-name"
-            )
-            .textContent =
-            data.full_name ||
-            "-";
-
-
-          /* USERNAME */
-
-          card
-            .querySelector(
-              ".profile-username"
-            )
-            .textContent =
-            data.username
-              ? `@${data.username}`
-              : `@${username}`;
-
-
-          /* BIO */
-
-          card
-            .querySelector(
-              ".profile-bio"
-            )
-            .textContent =
-            data.bio ||
-            "-";
-
-
-          /* FOLLOWERS */
-
-          card
-            .querySelector(
-              ".profile-followers"
-            )
-            .textContent =
-            data.followers ??
-            0;
-
-
-          /* FOLLOWING */
-
-          card
-            .querySelector(
-              ".profile-following"
-            )
-            .textContent =
-            data.following ??
-            0;
-
-
-          /* POSTS */
-
-          card
-            .querySelector(
-              ".profile-posts"
-            )
-            .textContent =
-            data.posts ??
-            0;
-
-
-          /* STATUS */
-
-          const status =
-            data.status ||
-            (
-              data.exists
-                ? "ACTIVE"
-                : "BANNED"
-            );
-
-
-          setStatus(
-            id,
+        function updateStatus(
             status
-          );
-
-
-          console.log(
-            `[CHECK] @${username} -> ${status}`
-          );
-
-        }
-
-      } catch (error) {
-
-        console.error(
-          `[CHECK ERROR] @${username}:`,
-          error
-        );
-
-
-        setStatus(
-          id,
-          "UNKNOWN"
-        );
-
-      } finally {
-
-        button.innerHTML =
-          originalHTML;
-
-        button.disabled =
-          false;
-
-      }
-
-    }
-
-
-    /* =====================================================
-       SET STATUS
-       ===================================================== */
-
-    function setStatus(
-      id,
-      status
-    ) {
-
-      const monitor =
-        monitors.get(id);
-
-
-      const card =
-        document.getElementById(
-          `monitor-${id}`
-        );
-
-
-      if (
-        !monitor ||
-        !card
-      ) {
-        return;
-      }
-
-
-      status =
-        String(
-          status ||
-          "UNKNOWN"
-        ).toUpperCase();
-
-
-      const previousStatus =
-        monitor.lastStatus;
-
-
-      monitor.lastStatus =
-        status;
-
-
-      /* Console status change */
-
-      if (
-        previousStatus &&
-        previousStatus !== "UNKNOWN" &&
-        previousStatus !== status
-      ) {
-
-        console.log(
-          `🔔 @${monitor.username} STATUS CHANGED: ${previousStatus} → ${status}`
-        );
-
-      }
-
-
-      const badges =
-        card.querySelectorAll(
-          ".header-status, .body-status"
-        );
-
-
-      badges.forEach(
-        (badge) => {
-
-          badge.classList.remove(
-            "status-active",
-            "status-banned",
-            "status-unknown"
-          );
-
-
-          if (
-            status === "ACTIVE"
-          ) {
-
-            badge.classList.add(
-              "status-active"
-            );
-
-          } else if (
-            status === "BANNED"
-          ) {
-
-            badge.classList.add(
-              "status-banned"
-            );
-
-          } else {
-
-            badge.classList.add(
-              "status-unknown"
-            );
-
-          }
-
-
-          const dotClass =
-            status === "ACTIVE"
-              ? "bg-green-400"
-              : status === "BANNED"
-                ? "bg-red-400"
-                : "bg-purple-400";
-
-
-          badge.innerHTML = `
-
-            <span
-              class="
-                w-1.5
-                h-1.5
-                rounded-full
-                ${dotClass}
-              "
-            ></span>
-
-            ${escapeHtml(status)}
-
-          `;
-
-        }
-      );
-
-    }
-
-
-    /* =====================================================
-       START / STOP MONITOR
-       ===================================================== */
-
-    async function toggleMonitor(
-      id
-    ) {
-
-      const monitor =
-        monitors.get(id);
-
-
-      const card =
-        document.getElementById(
-          `monitor-${id}`
-        );
-
-
-      if (
-        !monitor ||
-        !card
-      ) {
-        return;
-      }
-
-
-      const input =
-        card.querySelector(
-          ".username-input-field"
-        );
-
-
-      const username =
-        input.value
-          .trim()
-          .replace(
-            /^@/,
-            ""
-          );
-
-
-      if (!username) {
-
-        alert(
-          "Enter Instagram username first"
-        );
-
-        return;
-
-      }
-
-
-      const button =
-        card.querySelector(
-          ".monitor-toggle-btn"
-        );
-
-
-      try {
-
-        /* ==============================
-           START
-           ============================== */
-
-        if (
-          !monitor.monitoring
         ) {
 
-          console.log(
-            `[MONITOR] Starting @${username}`
-          );
-
-
-          const response =
-            await fetch(
-              "/api/monitor/start",
-              {
-                method: "POST",
-
-                headers: {
-                  "Content-Type":
-                    "application/json"
-                },
-
-                body:
-                  JSON.stringify({
-                    username
-                  })
-              }
-            );
-
-
-          const data =
-            await response.json();
-
-
-          if (!response.ok) {
-
-            throw new Error(
-              data.error ||
-              "Failed to start monitor"
-            );
-
-          }
-
-
-          monitor.username =
-            username;
-
-
-          monitor.monitoring =
-            true;
-
-
-          monitor.startedAt =
-            data.startedAt ||
-            Date.now();
-
-
-          button.innerHTML = `
-            <i
-              class="
-                fa-solid
-                fa-stop
-                mr-2
-              "
-            ></i>
-
-            STOP MONITOR
-          `;
-
-
-          setStatus(
-            id,
-            data.lastStatus ||
-            monitor.lastStatus ||
-            "UNKNOWN"
-          );
-
-
-          console.log(
-            `[MONITOR] @${username} monitoring started`
-          );
-
-
-        }
-
-        /* ==============================
-           STOP
-           ============================== */
-
-        else {
-
-          console.log(
-            `[MONITOR] Stopping @${monitor.username}`
-          );
-
-
-          const response =
-            await fetch(
-              "/api/monitor/stop",
-              {
-                method: "POST",
-
-                headers: {
-                  "Content-Type":
-                    "application/json"
-                },
-
-                body:
-                  JSON.stringify({
-                    username:
-                      monitor.username
-                  })
-              }
-            );
-
-
-          const data =
-            await response.json();
-
-
-          if (!response.ok) {
-
-            throw new Error(
-              data.error ||
-              "Failed to stop monitor"
-            );
-
-          }
-
-
-          monitor.monitoring =
-            false;
-
-
-          button.innerHTML = `
-            <i
-              class="
-                fa-solid
-                fa-play
-                mr-2
-              "
-            ></i>
-
-            START MONITOR
-          `;
-
-
-          console.log(
-            `[MONITOR] @${monitor.username} monitoring stopped`
-          );
-
-        }
-
-
-        updateCount();
-
-
-      } catch (error) {
-
-        console.error(
-          "[MONITOR ERROR]",
-          error
-        );
-
-
-        alert(
-          error.message
-        );
-
-      }
-
-    }
-
-
-    /* =====================================================
-       RESTORE BACKEND MONITORS
-       ===================================================== */
-
-    async function restoreBackendMonitors() {
-
-      try {
-
-        const response =
-          await fetch(
-            "/api/monitor/status"
-          );
-
-
-        if (!response.ok) {
-          return;
-        }
-
-
-        const data =
-          await response.json();
-
-
-        const saved =
-          Array.isArray(data)
-            ? data
-            : data.monitors || [];
-
-
-        console.log(
-          "[MONITOR] Restoring backend monitors:",
-          saved
-        );
-
-
-        saved.forEach(
-          (item) => {
-
-            if (
-              !item.username
-            ) {
-              return;
-            }
-
-
-            addMonitor({
-
-              username:
-                item.username,
-
-              monitoring:
-                item.monitoring !== false,
-
-              startedAt:
-                item.startedAt,
-
-              lastStatus:
-                item.lastStatus,
-
-              elapsedSeconds:
-                item.elapsedSeconds ||
-                0
-
-            });
-
-          }
-        );
-
-
-        /* Minimize restored cards */
-
-        const cards =
-          document.querySelectorAll(
-            ".monitor-card"
-          );
-
-
-        cards.forEach(
-          (card) => {
-
-            card.classList.add(
-              "minimized"
-            );
-
-          }
-        );
-
-
-        /* Open last card */
-
-        if (
-          cards.length
-        ) {
-
-          cards[
-            cards.length - 1
-          ].classList.remove(
-            "minimized"
-          );
-
-        }
-
-
-        /* Restore buttons */
-
-        monitors.forEach(
-          (monitor, id) => {
-
-            const card =
-              document.getElementById(
-                `monitor-${id}`
-              );
-
-
-            if (!card) {
-              return;
-            }
-
-
-            const button =
-              card.querySelector(
-                ".monitor-toggle-btn"
-              );
+            const el =
+                document.getElementById(
+                    "status"
+                );
 
 
             if (
-              monitor.monitoring
+                status === "ACTIVE"
             ) {
 
-              button.innerHTML = `
-                <i
-                  class="
-                    fa-solid
-                    fa-stop
-                    mr-2
-                  "
-                ></i>
+                el.textContent =
+                    "ACTIVE";
 
-                STOP MONITOR
-              `;
+
+                el.className =
+                    "text-3xl font-bold mt-1 status-active";
+
 
             } else {
 
-              button.innerHTML = `
-                <i
-                  class="
-                    fa-solid
-                    fa-play
-                    mr-2
-                  "
-                ></i>
+                el.textContent =
+                    "BANNED";
 
-                START MONITOR
-              `;
+
+                el.className =
+                    "text-3xl font-bold mt-1 status-banned";
 
             }
 
-          }
-        );
-
-
-        updateCount();
-
-
-      } catch (error) {
-
-        console.error(
-          "Failed to restore monitors:",
-          error
-        );
-
-      }
-
-    }
-
-
-    /* =====================================================
-       UPDATE TIMERS + BACKEND STATUS
-       ===================================================== */
-
-    async function updateTimers() {
-
-      try {
-
-        const response =
-          await fetch(
-            "/api/monitor/status"
-          );
-
-
-        if (!response.ok) {
-          return;
         }
 
 
-        const data =
-          await response.json();
+        /* =================================================
+           FETCH PROFILE
+           ================================================= */
 
+        async function fetchProfile() {
 
-        const saved =
-          Array.isArray(data)
-            ? data
-            : data.monitors || [];
-
-
-        const backendMap =
-          new Map(
-            saved.map(
-              item => [
-                item.username,
-                item
-              ]
-            )
-          );
-
-
-        monitors.forEach(
-          (monitor, id) => {
-
-            if (
-              !monitor.username
-            ) {
-              return;
-            }
-
-
-            const backend =
-              backendMap.get(
-                monitor.username
-              );
-
-
-            if (backend) {
-
-              monitor.monitoring =
-                backend.monitoring;
-
-
-              monitor.elapsedSeconds =
-                backend.elapsedSeconds ||
-                0;
-
-
-              monitor.startedAt =
-                backend.startedAt ||
-                monitor.startedAt;
-
-
-              if (
-                backend.lastStatus
-              ) {
-
-                setStatus(
-                  id,
-                  backend.lastStatus
+            const usernameInput =
+                document.getElementById(
+                    "username"
                 );
 
-              }
+
+            const username =
+                usernameInput.value.trim();
+
+
+            if (!username) {
+
+                alert(
+                    "Enter username"
+                );
+
+                return;
 
             }
 
 
-            const card =
-              document.getElementById(
-                `monitor-${id}`
-              );
+            currentUsername =
+                username
+                    .replace(/^@/, "")
+                    .trim();
 
 
-            if (!card) {
-              return;
+            lastStatus = "";
+
+
+            addLog(
+                `Fetching profile for @${currentUsername}...`,
+                "purple"
+            );
+
+
+            try {
+
+                const res =
+                    await fetch(
+                        "/api/check",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+                                    username:
+                                        currentUsername
+                                })
+                        }
+                    );
+
+
+                const data =
+                    await res.json();
+
+
+                console.log(
+                    "API Response:",
+                    data
+                );
+
+
+                /* Show profile card */
+
+                document
+                    .getElementById(
+                        "profile-card"
+                    )
+                    .classList
+                    .remove(
+                        "hidden"
+                    );
+
+
+                /* =========================================
+                   ACTIVE ACCOUNT
+                   ========================================= */
+
+                if (
+                    data.exists &&
+                    data.user
+                ) {
+
+                    const user =
+                        data.user;
+
+
+                    /* Profile picture */
+
+                    document
+                        .getElementById(
+                            "pfp"
+                        )
+                        .src =
+                        user.profile_pic ||
+                        "";
+
+
+                    /* Full name */
+
+                    document
+                        .getElementById(
+                            "fullname"
+                        )
+                        .textContent =
+                        user.full_name ||
+                        user.username ||
+                        currentUsername;
+
+
+                    /* Username */
+
+                    document
+                        .getElementById(
+                            "user"
+                        )
+                        .textContent =
+                        `@${user.username || currentUsername}`;
+
+
+                    /* Bio */
+
+                    document
+                        .getElementById(
+                            "bio"
+                        )
+                        .textContent =
+                        user.biography ||
+                        "No bio";
+
+
+                    /* Followers */
+
+                    document
+                        .getElementById(
+                            "followers"
+                        )
+                        .textContent =
+                        user.followers ??
+                        "—";
+
+
+                    /* Following */
+
+                    document
+                        .getElementById(
+                            "following"
+                        )
+                        .textContent =
+                        user.following ??
+                        "—";
+
+
+                    /* Posts */
+
+                    document
+                        .getElementById(
+                            "posts"
+                        )
+                        .textContent =
+                        user.posts ??
+                        "—";
+
+
+                    /* Status */
+
+                    updateStatus(
+                        "ACTIVE"
+                    );
+
+
+                    lastStatus =
+                        "ACTIVE";
+
+
+                    addLog(
+                        `@${currentUsername} is ACTIVE`,
+                        "active"
+                    );
+
+                }
+
+
+                /* =========================================
+                   BANNED / NOT FOUND
+                   ========================================= */
+
+                else {
+
+                    document
+                        .getElementById(
+                            "pfp"
+                        )
+                        .src =
+                        "https://via.placeholder.com/150?text=No+Image";
+
+
+                    document
+                        .getElementById(
+                            "fullname"
+                        )
+                        .textContent =
+                        currentUsername;
+
+
+                    document
+                        .getElementById(
+                            "user"
+                        )
+                        .textContent =
+                        `@${currentUsername}`;
+
+
+                    document
+                        .getElementById(
+                            "bio"
+                        )
+                        .textContent =
+                        "Account not found or banned";
+
+
+                    document
+                        .getElementById(
+                            "followers"
+                        )
+                        .textContent =
+                        "—";
+
+
+                    document
+                        .getElementById(
+                            "following"
+                        )
+                        .textContent =
+                        "—";
+
+
+                    document
+                        .getElementById(
+                            "posts"
+                        )
+                        .textContent =
+                        "—";
+
+
+                    updateStatus(
+                        "BANNED"
+                    );
+
+
+                    lastStatus =
+                        "BANNED";
+
+
+                    addLog(
+                        `@${currentUsername} is BANNED`,
+                        "banned"
+                    );
+
+                }
+
+
+            } catch (e) {
+
+                console.error(
+                    "Profile fetch error:",
+                    e
+                );
+
+
+                addLog(
+                    "Failed to fetch profile",
+                    "banned"
+                );
+
             }
 
-
-            const elapsed =
-              monitor.elapsedSeconds ||
-              0;
+        }
 
 
-            const timerText =
-              formatElapsed(
-                elapsed
-              );
+        /* =================================================
+           START / STOP MONITOR
+           ================================================= */
+
+        function toggleMonitor() {
+
+            const btn =
+                document.getElementById(
+                    "monitor-btn"
+                );
 
 
-            /* Header timer */
-
-            const timer =
-              card.querySelector(
-                ".timer"
-              );
-
-
-            if (timer) {
-
-              timer.textContent =
-                timerText;
-
-            }
-
-
-            /* Monitoring timer */
-
-            const monitoringTime =
-              card.querySelector(
-                ".monitoring-time"
-              );
-
+            /* =========================================
+               STOP
+               ========================================= */
 
             if (
-              monitoringTime
+                isMonitoring
             ) {
 
-              monitoringTime.textContent =
-                timerText;
+                clearInterval(
+                    monitorInterval
+                );
+
+
+                isMonitoring =
+                    false;
+
+
+                btn.innerHTML = `
+                    <i
+                        class="fas fa-play mr-2"
+                    ></i>
+                    START MONITOR
+                `;
+
+
+                btn.className = `
+                    purple-button
+                    px-8
+                    sm:px-10
+                    py-4
+                    rounded-2xl
+                    font-bold
+                    text-lg
+                    w-full
+                    sm:w-auto
+                `;
+
+
+                addLog(
+                    "Monitoring stopped",
+                    "purple"
+                );
+
+
+                return;
 
             }
 
-          }
-        );
+
+            /* =========================================
+               START
+               ========================================= */
+
+            if (
+                !currentUsername
+            ) {
+
+                return alert(
+                    "First check a profile"
+                );
+
+            }
 
 
-        updateCount();
+            isMonitoring =
+                true;
 
 
-      } catch (error) {
-
-        console.error(
-          "Timer update failed:",
-          error
-        );
-
-      }
-
-    }
+            btn.innerHTML = `
+                <i
+                    class="fas fa-stop mr-2"
+                ></i>
+                STOP MONITOR
+            `;
 
 
-    /* =====================================================
-       START APPLICATION
-       ===================================================== */
+            btn.className = `
+                px-8
+                sm:px-10
+                py-4
+                bg-red-600
+                hover:bg-red-500
+                text-white
+                rounded-2xl
+                font-bold
+                text-lg
+                w-full
+                sm:w-auto
+                transition
+            `;
 
-    document.addEventListener(
-      "DOMContentLoaded",
-      () => {
+
+            addLog(
+                `Started monitoring @${currentUsername}`,
+                "purple"
+            );
+
+
+            /* Immediate check */
+
+            checkStatus();
+
+
+            /* Every 3 seconds */
+
+            monitorInterval =
+                setInterval(
+                    checkStatus,
+                    3000
+                );
+
+        }
+
+
+        /* =================================================
+           CHECK STATUS
+           ================================================= */
+
+        async function checkStatus() {
+
+            if (
+                !currentUsername
+            ) {
+                return;
+            }
+
+
+            try {
+
+                const res =
+                    await fetch(
+                        "/api/check",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+                                    username:
+                                        currentUsername
+                                })
+                        }
+                    );
+
+
+                const data =
+                    await res.json();
+
+
+                console.log(
+                    `Monitor response @${currentUsername}:`,
+                    data
+                );
+
+
+                let status;
+
+
+                if (
+                    data.exists
+                ) {
+
+                    status =
+                        "ACTIVE";
+
+                } else {
+
+                    status =
+                        "BANNED";
+
+                }
+
+
+                /* Detect status change */
+
+                if (
+                    lastStatus &&
+                    lastStatus !== status
+                ) {
+
+                    addLog(
+                        `STATUS CHANGED: @${currentUsername} ${lastStatus} → ${status}`,
+                        status === "ACTIVE"
+                            ? "active"
+                            : "banned"
+                    );
+
+                } else {
+
+                    addLog(
+                        `@${currentUsername} → ${status}`,
+                        status === "ACTIVE"
+                            ? "active"
+                            : "banned"
+                    );
+
+                }
+
+
+                lastStatus =
+                    status;
+
+
+                updateStatus(
+                    status
+                );
+
+
+                /* =========================================
+                   If active, refresh profile information
+                   ========================================= */
+
+                if (
+                    data.exists &&
+                    data.user
+                ) {
+
+                    const user =
+                        data.user;
+
+
+                    document
+                        .getElementById(
+                            "profile-card"
+                        )
+                        .classList
+                        .remove(
+                            "hidden"
+                        );
+
+
+                    document
+                        .getElementById(
+                            "pfp"
+                        )
+                        .src =
+                        user.profile_pic ||
+                        "";
+
+
+                    document
+                        .getElementById(
+                            "fullname"
+                        )
+                        .textContent =
+                        user.full_name ||
+                        user.username ||
+                        currentUsername;
+
+
+                    document
+                        .getElementById(
+                            "user"
+                        )
+                        .textContent =
+                        `@${user.username || currentUsername}`;
+
+
+                    document
+                        .getElementById(
+                            "bio"
+                        )
+                        .textContent =
+                        user.biography ||
+                        "No bio";
+
+
+                    document
+                        .getElementById(
+                            "followers"
+                        )
+                        .textContent =
+                        user.followers ??
+                        "—";
+
+
+                    document
+                        .getElementById(
+                            "following"
+                        )
+                        .textContent =
+                        user.following ??
+                        "—";
+
+
+                    document
+                        .getElementById(
+                            "posts"
+                        )
+                        .textContent =
+                        user.posts ??
+                        "—";
+
+                }
+
+
+            } catch (e) {
+
+                console.error(
+                    "Monitor API error:",
+                    e
+                );
+
+
+                addLog(
+                    "API error",
+                    "banned"
+                );
+
+            }
+
+        }
+
+
+        /* =================================================
+           ENTER KEY
+           ================================================= */
 
         document
-          .getElementById(
-            "add-monitor-btn"
-          )
-          .addEventListener(
-            "click",
-            () => {
-              addMonitor();
-            }
-          );
+            .getElementById(
+                "username"
+            )
+            .addEventListener(
+                "keydown",
+                function(event) {
 
+                    if (
+                        event.key === "Enter"
+                    ) {
 
-        /* Restore backend monitors */
+                        fetchProfile();
 
-        restoreBackendMonitors();
+                    }
 
+                }
+            );
 
-        /* Update every second */
-
-        setInterval(
-          updateTimers,
-          1000
-        );
-
-      }
-    );
-
-  </script>
+    </script>
 
 </body>
 </html>
+```
