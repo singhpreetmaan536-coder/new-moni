@@ -1,19 +1,18 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Instagram Monitor</title>
 
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Font Awesome -->
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-  />
+  >
 
   <style>
     * {
@@ -26,7 +25,7 @@
       padding: 0;
       min-height: 100%;
       font-family: Arial, Helvetica, sans-serif;
-      background: #05000b;
+      background: #050008;
       color: white;
     }
 
@@ -36,53 +35,55 @@
       position: relative;
     }
 
-    /* =========================================================
-       ANIMATED ANIME BACKGROUND
-       Put anime.jpg inside /public
-       ========================================================= */
+    /* =====================================================
+       ANIME BACKGROUND
+       Put anime.jpg inside public/
+       ===================================================== */
 
     body::before {
       content: "";
       position: fixed;
-      inset: -5%;
-      z-index: -3;
+      inset: -6%;
+      z-index: -5;
 
       background-image: url("./anime.jpg");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
 
-      animation: animeBackground 18s ease-in-out infinite alternate;
       transform: scale(1.08);
+
+      animation: animeZoom 18s ease-in-out infinite alternate;
     }
 
-    /* Dark purple overlay */
+    /* Dark purple/black overlay */
+
     body::after {
       content: "";
       position: fixed;
       inset: 0;
-      z-index: -2;
+      z-index: -4;
 
       background:
         radial-gradient(
-          circle at 20% 20%,
+          circle at 15% 20%,
           rgba(168, 85, 247, 0.28),
-          transparent 35%
+          transparent 32%
         ),
         radial-gradient(
-          circle at 80% 70%,
-          rgba(126, 34, 206, 0.24),
+          circle at 85% 75%,
+          rgba(126, 34, 206, 0.25),
           transparent 35%
         ),
         linear-gradient(
           135deg,
-          rgba(0, 0, 0, 0.90),
-          rgba(31, 0, 54, 0.72),
-          rgba(0, 0, 0, 0.92)
+          rgba(0, 0, 0, 0.94),
+          rgba(30, 0, 50, 0.72),
+          rgba(0, 0, 0, 0.94)
         );
     }
 
-    @keyframes animeBackground {
+    @keyframes animeZoom {
       0% {
         transform: scale(1.08) translate3d(0, 0, 0);
       }
@@ -96,16 +97,16 @@
       }
     }
 
-    /* =========================================================
+    /* =====================================================
        FLOATING PURPLE LIGHTS
-       ========================================================= */
+       ===================================================== */
 
     .bg-light {
       position: fixed;
       border-radius: 50%;
       pointer-events: none;
-      z-index: -1;
-      filter: blur(80px);
+      z-index: -3;
+      filter: blur(85px);
       opacity: 0.25;
     }
 
@@ -114,7 +115,7 @@
       height: 250px;
       background: #a855f7;
       top: 5%;
-      left: -80px;
+      left: -100px;
       animation: floatOne 10s ease-in-out infinite;
     }
 
@@ -122,7 +123,7 @@
       width: 300px;
       height: 300px;
       background: #7e22ce;
-      right: -100px;
+      right: -120px;
       bottom: 10%;
       animation: floatTwo 12s ease-in-out infinite;
     }
@@ -159,18 +160,18 @@
     @keyframes floatThree {
       0%, 100% {
         transform: scale(1);
-        opacity: 0.15;
+        opacity: 0.12;
       }
 
       50% {
         transform: scale(1.5);
-        opacity: 0.30;
+        opacity: 0.28;
       }
     }
 
-    /* =========================================================
-       MAIN CONTAINER
-       ========================================================= */
+    /* =====================================================
+       MAIN
+       ===================================================== */
 
     .app-container {
       width: min(1150px, 94%);
@@ -178,20 +179,23 @@
       padding: 35px 0 60px;
     }
 
-    /* =========================================================
+    /* =====================================================
        HEADER
-       ========================================================= */
+       ===================================================== */
 
     .main-header {
       position: relative;
       overflow: hidden;
 
-      background: rgba(10, 4, 18, 0.72);
+      background: rgba(8, 2, 15, 0.78);
+
       border: 1px solid rgba(168, 85, 247, 0.35);
+
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
 
       border-radius: 24px;
+
       padding: 25px;
 
       box-shadow:
@@ -204,16 +208,18 @@
     .main-header::before {
       content: "";
       position: absolute;
+
       top: 0;
       left: -100%;
+
       width: 100%;
       height: 2px;
 
       background: linear-gradient(
         90deg,
         transparent,
-        #a855f7,
-        #e879f9,
+        #7e22ce,
+        #c084fc,
         #a855f7,
         transparent
       );
@@ -249,21 +255,22 @@
         0 0 25px rgba(168, 85, 247, 0.4);
     }
 
-    /* =========================================================
+    /* =====================================================
        ADD BUTTON
-       ========================================================= */
+       ===================================================== */
 
     .add-btn {
       width: 48px;
       height: 48px;
 
       border-radius: 15px;
+
       border: 1px solid rgba(216, 180, 254, 0.45);
 
       background: linear-gradient(
         135deg,
-        rgba(126, 34, 206, 0.8),
-        rgba(168, 85, 247, 0.55)
+        rgba(126, 34, 206, 0.9),
+        rgba(168, 85, 247, 0.65)
       );
 
       color: white;
@@ -288,9 +295,9 @@
       transform: scale(0.94);
     }
 
-    /* =========================================================
+    /* =====================================================
        MONITOR CARD
-       ========================================================= */
+       ===================================================== */
 
     .monitor-card {
       position: relative;
@@ -301,8 +308,8 @@
       background:
         linear-gradient(
           145deg,
-          rgba(12, 5, 20, 0.88),
-          rgba(24, 5, 38, 0.78)
+          rgba(9, 3, 16, 0.90),
+          rgba(28, 5, 42, 0.80)
         );
 
       border: 1px solid rgba(168, 85, 247, 0.28);
@@ -344,9 +351,9 @@
       }
     }
 
-    /* =========================================================
+    /* =====================================================
        MONITOR HEADER
-       ========================================================= */
+       ===================================================== */
 
     .monitor-header {
       display: flex;
@@ -378,10 +385,14 @@
         );
     }
 
+    /* =====================================================
+       COLLAPSE ANIMATION
+       ===================================================== */
+
     .monitor-body {
       padding: 20px;
 
-      max-height: 1200px;
+      max-height: 1400px;
       opacity: 1;
 
       transition:
@@ -406,9 +417,9 @@
       transition: transform 0.35s ease;
     }
 
-    /* =========================================================
-       INPUTS
-       ========================================================= */
+    /* =====================================================
+       INPUT
+       ===================================================== */
 
     .username-input {
       width: 100%;
@@ -442,9 +453,9 @@
       background: rgba(10, 0, 18, 0.75);
     }
 
-    /* =========================================================
-       BUTTONS
-       ========================================================= */
+    /* =====================================================
+       BUTTON
+       ===================================================== */
 
     .purple-btn {
       position: relative;
@@ -477,9 +488,12 @@
 
     .purple-btn::before {
       content: "";
+
       position: absolute;
+
       top: 0;
       left: -120%;
+
       width: 80%;
       height: 100%;
 
@@ -511,9 +525,15 @@
       transform: scale(0.97);
     }
 
-    /* =========================================================
-       STATUS BADGES
-       ========================================================= */
+    .purple-btn:disabled {
+      opacity: 0.65;
+      cursor: wait;
+      transform: none;
+    }
+
+    /* =====================================================
+       STATUS
+       ===================================================== */
 
     .status-badge {
       display: inline-flex;
@@ -534,29 +554,37 @@
 
     .status-active {
       color: #86efac;
+
       background: rgba(34, 197, 94, 0.10);
+
       border-color: rgba(34, 197, 94, 0.25);
 
-      box-shadow: 0 0 15px rgba(34, 197, 94, 0.08);
+      box-shadow:
+        0 0 15px rgba(34, 197, 94, 0.08);
     }
 
     .status-banned {
       color: #fca5a5;
+
       background: rgba(239, 68, 68, 0.10);
+
       border-color: rgba(239, 68, 68, 0.25);
 
-      box-shadow: 0 0 15px rgba(239, 68, 68, 0.08);
+      box-shadow:
+        0 0 15px rgba(239, 68, 68, 0.08);
     }
 
     .status-unknown {
       color: #d8b4fe;
+
       background: rgba(168, 85, 247, 0.10);
+
       border-color: rgba(168, 85, 247, 0.25);
     }
 
-    /* =========================================================
-       PROFILE IMAGE
-       ========================================================= */
+    /* =====================================================
+       PROFILE
+       ===================================================== */
 
     .profile-image {
       width: 100px;
@@ -584,14 +612,34 @@
 
       50% {
         box-shadow:
-          0 0 28px rgba(168, 85, 247, 0.55),
+          0 0 30px rgba(168, 85, 247, 0.55),
           0 0 60px rgba(126, 34, 206, 0.18);
       }
     }
 
-    /* =========================================================
-       STAT BOX
-       ========================================================= */
+    /* =====================================================
+       PROFILE SECTION ANIMATION
+       ===================================================== */
+
+    .profile-section:not(.hidden) {
+      animation: profileAppear 0.5s ease-out;
+    }
+
+    @keyframes profileAppear {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* =====================================================
+       STATS
+       ===================================================== */
 
     .stat-box {
       background: rgba(0, 0, 0, 0.30);
@@ -617,9 +665,9 @@
         0 0 20px rgba(168, 85, 247, 0.08);
     }
 
-    /* =========================================================
+    /* =====================================================
        TIMER
-       ========================================================= */
+       ===================================================== */
 
     .timer {
       font-family: monospace;
@@ -630,9 +678,9 @@
         0 0 10px rgba(168, 85, 247, 0.35);
     }
 
-    /* =========================================================
-       DELETE BUTTON
-       ========================================================= */
+    /* =====================================================
+       DELETE
+       ===================================================== */
 
     .delete-btn {
       width: 35px;
@@ -662,9 +710,9 @@
         0 0 20px rgba(239, 68, 68, 0.12);
     }
 
-    /* =========================================================
-       MONITORING PULSE
-       ========================================================= */
+    /* =====================================================
+       PULSE
+       ===================================================== */
 
     .pulse-dot {
       width: 8px;
@@ -697,16 +745,16 @@
       }
     }
 
-    /* =========================================================
+    /* =====================================================
        SCROLLBAR
-       ========================================================= */
+       ===================================================== */
 
     ::-webkit-scrollbar {
       width: 8px;
     }
 
     ::-webkit-scrollbar-track {
-      background: #05000b;
+      background: #050008;
     }
 
     ::-webkit-scrollbar-thumb {
@@ -722,11 +770,12 @@
       background: #c084fc;
     }
 
-    /* =========================================================
-       RESPONSIVE
-       ========================================================= */
+    /* =====================================================
+       MOBILE
+       ===================================================== */
 
     @media (max-width: 640px) {
+
       .app-container {
         width: 94%;
         padding-top: 18px;
@@ -759,22 +808,24 @@
 
 <body>
 
-  <!-- Floating background lights -->
+  <!-- Animated purple lights -->
   <div class="bg-light one"></div>
   <div class="bg-light two"></div>
   <div class="bg-light three"></div>
 
+
   <div class="app-container">
 
-    <!-- =====================================================
-         HEADER
-         ====================================================== -->
+    <!-- ===================================================
+         MAIN HEADER
+         =================================================== -->
 
     <div class="main-header">
 
       <div class="flex items-center justify-between gap-4">
 
         <div>
+
           <div class="flex items-center gap-3">
 
             <div
@@ -785,13 +836,17 @@
                   rgba(126,34,206,.9),
                   rgba(168,85,247,.7)
                 );
-                box-shadow: 0 0 25px rgba(168,85,247,.3);
+                box-shadow:
+                  0 0 25px rgba(168,85,247,.3);
               "
             >
-              <i class="fa-brands fa-instagram text-2xl"></i>
+              <i
+                class="fa-brands fa-instagram text-2xl"
+              ></i>
             </div>
 
             <div>
+
               <h1
                 class="text-2xl sm:text-3xl font-black title-glow"
               >
@@ -801,17 +856,22 @@
               <div
                 class="flex items-center gap-2 mt-1 text-sm text-purple-200/70"
               >
+
                 <span class="pulse-dot"></span>
 
                 <span>
                   <span id="monitor-count">0</span>
                   active monitors
                 </span>
+
               </div>
+
             </div>
 
           </div>
+
         </div>
+
 
         <button
           id="add-monitor-btn"
@@ -825,9 +885,10 @@
 
     </div>
 
-    <!-- =====================================================
+
+    <!-- ===================================================
          MONITOR LIST
-         ====================================================== -->
+         =================================================== -->
 
     <div id="monitor-list"></div>
 
@@ -836,95 +897,158 @@
 
   <script>
 
-    /* =========================================================
-       ORIGINAL MONITOR LOGIC
-       ========================================================= */
+    /* =====================================================
+       MONITOR DATA
+       ===================================================== */
 
     const monitors = new Map();
 
     let monitorCounter = 0;
 
 
+    /* =====================================================
+       CONSOLE LOGGING
+       Existing console logging preserved
+       ===================================================== */
+
     function addLog(message) {
       console.log(message);
     }
 
 
+    /* =====================================================
+       ESCAPE HTML
+       ===================================================== */
+
     function escapeHtml(value) {
+
       return String(value ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+
     }
 
 
+    /* =====================================================
+       TIMER FORMAT
+       ===================================================== */
+
     function formatElapsed(seconds) {
 
-      seconds = Math.max(0, Number(seconds) || 0);
+      seconds =
+        Math.max(
+          0,
+          Number(seconds) || 0
+        );
 
-      const h = Math.floor(seconds / 3600);
+      const h =
+        Math.floor(seconds / 3600);
 
-      const m = Math.floor((seconds % 3600) / 60);
+      const m =
+        Math.floor(
+          (seconds % 3600) / 60
+        );
 
-      const s = seconds % 60;
+      const s =
+        seconds % 60;
 
       return [
         String(h).padStart(2, "0"),
         String(m).padStart(2, "0"),
         String(s).padStart(2, "0")
       ].join(":");
+
     }
 
 
-    function renderMonitorCard(id, data = {}) {
+    /* =====================================================
+       RENDER MONITOR CARD
+       ===================================================== */
 
-      const username = data.username || "";
+    function renderMonitorCard(
+      id,
+      data = {}
+    ) {
 
-      const card = document.createElement("div");
+      const username =
+        data.username || "";
 
-      card.className = "monitor-card";
 
-      card.id = `monitor-${id}`;
+      const card =
+        document.createElement("div");
 
-      card.dataset.id = id;
+
+      card.className =
+        "monitor-card";
+
+
+      card.id =
+        `monitor-${id}`;
+
+
+      card.dataset.id =
+        id;
+
 
       card.innerHTML = `
 
+        <!-- HEADER -->
+
         <div class="monitor-header">
 
-          <div class="flex items-center gap-3 min-w-0">
+          <div
+            class="flex items-center gap-3 min-w-0"
+          >
 
             <div
               class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
               style="
                 background: rgba(168,85,247,.12);
-                border: 1px solid rgba(168,85,247,.25);
+                border:
+                  1px solid
+                  rgba(168,85,247,.25);
               "
             >
-              <i class="fa-brands fa-instagram text-purple-400"></i>
+              <i
+                class="fa-brands fa-instagram text-purple-400"
+              ></i>
             </div>
+
 
             <div class="min-w-0">
 
-              <div class="flex items-center gap-2">
+              <div
+                class="flex items-center gap-2"
+              >
 
                 <h2
                   class="font-bold text-white truncate monitor-title"
                 >
-                  @${escapeHtml(username || "new monitor")}
+                  @${escapeHtml(
+                    username || "new monitor"
+                  )}
                 </h2>
 
+
                 <span
-                  class="status-badge status-unknown header-status"
+                  class="
+                    status-badge
+                    status-unknown
+                    header-status
+                  "
                 >
                   <span>UNKNOWN</span>
                 </span>
 
               </div>
 
-              <div class="flex items-center gap-3 mt-1">
+
+              <div
+                class="flex items-center gap-3 mt-1"
+              >
 
                 <span
                   class="timer text-xs"
@@ -945,18 +1069,31 @@
           </div>
 
 
-          <div class="flex items-center gap-2 shrink-0">
+          <div
+            class="flex items-center gap-2 shrink-0"
+          >
 
             <button
               class="delete-btn"
-              onclick="event.stopPropagation(); removeMonitor(${id})"
               title="Delete"
+              onclick="
+                event.stopPropagation();
+                removeMonitor(${id});
+              "
             >
-              <i class="fa-solid fa-trash text-xs"></i>
+              <i
+                class="fa-solid fa-trash text-xs"
+              ></i>
             </button>
 
+
             <i
-              class="fa-solid fa-chevron-down chevron text-purple-300/60"
+              class="
+                fa-solid
+                fa-chevron-down
+                chevron
+                text-purple-300/60
+              "
             ></i>
 
           </div>
@@ -964,59 +1101,125 @@
         </div>
 
 
+        <!-- BODY -->
+
         <div class="monitor-body">
 
-          <!-- Search -->
+          <!-- USERNAME -->
 
-          <div class="flex flex-col sm:flex-row gap-3">
+          <div
+            class="
+              flex
+              flex-col
+              sm:flex-row
+              gap-3
+            "
+          >
 
             <input
               type="text"
-              class="username-input username-input-field"
+              class="
+                username-input
+                username-input-field
+              "
               placeholder="Enter Instagram username"
               value="${escapeHtml(username)}"
             />
 
+
             <button
-              class="purple-btn check-btn sm:w-32"
+              class="
+                purple-btn
+                check-btn
+                sm:w-32
+              "
             >
-              <i class="fa-solid fa-magnifying-glass mr-2"></i>
+              <i
+                class="
+                  fa-solid
+                  fa-magnifying-glass
+                  mr-2
+                "
+              ></i>
+
               CHECK
             </button>
 
           </div>
 
 
-          <!-- Profile -->
+          <!-- PROFILE INFO -->
 
-          <div class="profile-section hidden mt-6">
+          <div
+            class="
+              profile-section
+              hidden
+              mt-6
+            "
+          >
 
             <div
-              class="flex flex-col sm:flex-row items-center sm:items-start gap-5"
+              class="
+                flex
+                flex-col
+                sm:flex-row
+                items-center
+                sm:items-start
+                gap-5
+              "
             >
 
+              <!-- PROFILE PIC -->
+
               <img
-                class="profile-image profile-pic"
+                class="
+                  profile-image
+                  profile-pic
+                "
                 src=""
                 alt="Profile"
               />
 
-              <div class="flex-1 text-center sm:text-left">
+
+              <!-- PROFILE DETAILS -->
+
+              <div
+                class="
+                  flex-1
+                  text-center
+                  sm:text-left
+                "
+              >
 
                 <h3
-                  class="text-xl font-bold profile-name"
+                  class="
+                    text-xl
+                    font-bold
+                    profile-name
+                  "
                 >
                   -
                 </h3>
 
+
                 <p
-                  class="text-purple-300 text-sm profile-username"
+                  class="
+                    text-purple-300
+                    text-sm
+                    profile-username
+                  "
                 >
                   -
                 </p>
 
+
                 <p
-                  class="text-gray-400 text-sm mt-2 profile-bio"
+                  class="
+                    text-gray-400
+                    text-sm
+                    mt-2
+                    profile-bio
+                  "
                 >
                   -
                 </p>
@@ -1026,20 +1229,39 @@
             </div>
 
 
+            <!-- PROFILE STATS -->
+
             <div
-              class="grid grid-cols-3 gap-3 mt-6"
+              class="
+                grid
+                grid-cols-3
+                gap-3
+                mt-6
+              "
             >
 
-              <div class="stat-box text-center">
+              <div
+                class="
+                  stat-box
+                  text-center
+                "
+              >
 
                 <div
-                  class="text-lg font-bold profile-followers"
+                  class="
+                    text-lg
+                    font-bold
+                    profile-followers
+                  "
                 >
                   0
                 </div>
 
                 <div
-                  class="text-xs text-gray-500"
+                  class="
+                    text-xs
+                    text-gray-500
+                  "
                 >
                   Followers
                 </div>
@@ -1047,16 +1269,28 @@
               </div>
 
 
-              <div class="stat-box text-center">
+              <div
+                class="
+                  stat-box
+                  text-center
+                "
+              >
 
                 <div
-                  class="text-lg font-bold profile-following"
+                  class="
+                    text-lg
+                    font-bold
+                    profile-following
+                  "
                 >
                   0
                 </div>
 
                 <div
-                  class="text-xs text-gray-500"
+                  class="
+                    text-xs
+                    text-gray-500
+                  "
                 >
                   Following
                 </div>
@@ -1064,16 +1298,28 @@
               </div>
 
 
-              <div class="stat-box text-center">
+              <div
+                class="
+                  stat-box
+                  text-center
+                "
+              >
 
                 <div
-                  class="text-lg font-bold profile-posts"
+                  class="
+                    text-lg
+                    font-bold
+                    profile-posts
+                  "
                 >
                   0
                 </div>
 
                 <div
-                  class="text-xs text-gray-500"
+                  class="
+                    text-xs
+                    text-gray-500
+                  "
                 >
                   Posts
                 </div>
@@ -1085,22 +1331,34 @@
           </div>
 
 
-          <!-- Status -->
+          <!-- CURRENT STATUS -->
 
           <div class="mt-6">
 
             <div
-              class="flex items-center justify-between"
+              class="
+                flex
+                items-center
+                justify-between
+              "
             >
 
               <span
-                class="text-sm text-gray-400"
+                class="
+                  text-sm
+                  text-gray-400
+                "
               >
                 Current Status
               </span>
 
+
               <span
-                class="status-badge status-unknown body-status"
+                class="
+                  status-badge
+                  status-unknown
+                  body-status
+                "
               >
                 UNKNOWN
               </span>
@@ -1110,45 +1368,84 @@
           </div>
 
 
-          <!-- Monitoring -->
+          <!-- MONITORING PANEL -->
 
           <div
             class="mt-4 p-4 rounded-xl"
             style="
-              background: rgba(168,85,247,.045);
-              border: 1px solid rgba(168,85,247,.10);
+              background:
+                rgba(168,85,247,.045);
+
+              border:
+                1px solid
+                rgba(168,85,247,.10);
             "
           >
 
             <div
-              class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+              class="
+                flex
+                flex-col
+                sm:flex-row
+                sm:items-center
+                sm:justify-between
+                gap-3
+              "
             >
 
               <div>
 
                 <div
-                  class="text-sm font-semibold text-purple-200"
+                  class="
+                    text-sm
+                    font-semibold
+                    text-purple-200
+                  "
                 >
                   Monitoring
                 </div>
 
+
                 <div
-                  class="text-xs text-gray-500 mt-1"
+                  class="
+                    text-xs
+                    text-gray-500
+                    mt-1
+                  "
                 >
                   Time:
-                  <span class="monitoring-time timer">
+
+                  <span
+                    class="
+                      monitoring-time
+                      timer
+                    "
+                  >
                     00:00:00
                   </span>
+
                 </div>
 
               </div>
 
 
               <button
-                class="purple-btn monitor-toggle-btn"
+                class="
+                  purple-btn
+                  monitor-toggle-btn
+                "
               >
-                <i class="fa-solid fa-play mr-2"></i>
+
+                <i
+                  class="
+                    fa-solid
+                    fa-play
+                    mr-2
+                  "
+                ></i>
+
                 START MONITOR
+
               </button>
 
             </div>
@@ -1164,189 +1461,298 @@
         .appendChild(card);
 
 
-      /* Header toggle */
+      /* Header click */
 
       card
         .querySelector(".monitor-header")
-        .addEventListener("click", () => {
-          toggleMinimize(id);
-        });
+        .addEventListener(
+          "click",
+          () => {
+            toggleMinimize(id);
+          }
+        );
 
 
-      /* Check */
+      /* Check button */
 
       card
         .querySelector(".check-btn")
-        .addEventListener("click", () => {
-          fetchProfile(id);
-        });
+        .addEventListener(
+          "click",
+          () => {
+            fetchProfile(id);
+          }
+        );
 
 
       /* Enter key */
 
       card
-        .querySelector(".username-input-field")
-        .addEventListener("keydown", (event) => {
+        .querySelector(
+          ".username-input-field"
+        )
+        .addEventListener(
+          "keydown",
+          (event) => {
 
-          if (event.key === "Enter") {
-            fetchProfile(id);
+            if (
+              event.key === "Enter"
+            ) {
+              fetchProfile(id);
+            }
+
           }
+        );
 
-        });
 
-
-      /* Start / stop */
+      /* Start / Stop */
 
       card
-        .querySelector(".monitor-toggle-btn")
-        .addEventListener("click", (event) => {
+        .querySelector(
+          ".monitor-toggle-btn"
+        )
+        .addEventListener(
+          "click",
+          (event) => {
 
-          event.stopPropagation();
+            event.stopPropagation();
 
-          toggleMonitor(id);
+            toggleMonitor(id);
 
-        });
+          }
+        );
 
 
-      monitors.set(id, {
+      /* Store monitor */
 
+      monitors.set(
         id,
+        {
+          id,
 
-        username,
+          username,
 
-        startedAt:
-          data.startedAt || null,
+          startedAt:
+            data.startedAt || null,
 
-        monitoring:
-          data.monitoring || false,
+          monitoring:
+            data.monitoring || false,
 
-        lastStatus:
-          data.lastStatus || "UNKNOWN",
+          lastStatus:
+            data.lastStatus ||
+            "UNKNOWN",
 
-        elapsedSeconds:
-          data.elapsedSeconds || 0
-
-      });
+          elapsedSeconds:
+            data.elapsedSeconds || 0
+        }
+      );
 
 
       setStatus(
         id,
-        data.lastStatus || "UNKNOWN"
+        data.lastStatus ||
+        "UNKNOWN"
       );
 
+
       updateCount();
+
 
       return card;
 
     }
 
 
+    /* =====================================================
+       MINIMIZE / EXPAND
+       ===================================================== */
+
     function toggleMinimize(id) {
 
       const card =
-        document.getElementById(`monitor-${id}`);
+        document.getElementById(
+          `monitor-${id}`
+        );
 
       if (!card) return;
 
-      card.classList.toggle("minimized");
+      card.classList.toggle(
+        "minimized"
+      );
 
     }
 
 
-    function minimizeOthers(currentId) {
+    function minimizeOthers(
+      currentId
+    ) {
 
-      monitors.forEach((monitor, id) => {
+      monitors.forEach(
+        (monitor, id) => {
 
-        if (id === currentId) return;
+          if (
+            id === currentId
+          ) {
+            return;
+          }
 
-        const card =
-          document.getElementById(`monitor-${id}`);
 
-        if (card) {
-          card.classList.add("minimized");
+          const card =
+            document.getElementById(
+              `monitor-${id}`
+            );
+
+
+          if (card) {
+            card.classList.add(
+              "minimized"
+            );
+          }
+
         }
-
-      });
+      );
 
     }
 
 
-    function addMonitor(data = {}) {
+    /* =====================================================
+       ADD MONITOR
+       ===================================================== */
+
+    function addMonitor(
+      data = {}
+    ) {
 
       monitorCounter++;
 
-      const id = monitorCounter;
+      const id =
+        monitorCounter;
+
 
       minimizeOthers(id);
 
-      const card =
-        renderMonitorCard(id, data);
 
-      card.classList.remove("minimized");
+      const card =
+        renderMonitorCard(
+          id,
+          data
+        );
+
+
+      card.classList.remove(
+        "minimized"
+      );
+
 
       const input =
-        card.querySelector(".username-input-field");
+        card.querySelector(
+          ".username-input-field"
+        );
+
 
       if (!data.username) {
-        setTimeout(() => input.focus(), 100);
+
+        setTimeout(
+          () => input.focus(),
+          100
+        );
+
       }
 
+
       updateCount();
+
 
       return id;
 
     }
 
 
+    /* =====================================================
+       COUNT
+       ===================================================== */
+
     function updateCount() {
 
       let count = 0;
 
-      monitors.forEach((monitor) => {
 
-        if (monitor.monitoring) {
-          count++;
+      monitors.forEach(
+        (monitor) => {
+
+          if (
+            monitor.monitoring
+          ) {
+            count++;
+          }
+
         }
+      );
 
-      });
 
       const element =
-        document.getElementById("monitor-count");
+        document.getElementById(
+          "monitor-count"
+        );
+
 
       if (element) {
-        element.textContent = count;
+
+        element.textContent =
+          count;
+
       }
 
     }
 
 
-    async function removeMonitor(id) {
+    /* =====================================================
+       REMOVE MONITOR
+       ===================================================== */
 
-      const monitor = monitors.get(id);
+    async function removeMonitor(
+      id
+    ) {
 
-      if (!monitor) return;
+      const monitor =
+        monitors.get(id);
 
-      if (monitor.monitoring && monitor.username) {
+
+      if (!monitor) {
+        return;
+      }
+
+
+      if (
+        monitor.monitoring &&
+        monitor.username
+      ) {
 
         try {
 
-          await fetch("/api/monitor/stop", {
+          await fetch(
+            "/api/monitor/stop",
+            {
+              method: "POST",
 
-            method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
 
-            headers: {
-              "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-              username: monitor.username
-            })
-
-          });
+              body:
+                JSON.stringify({
+                  username:
+                    monitor.username
+                })
+            }
+          );
 
         } catch (error) {
 
-          console.error(error);
+          console.error(
+            error
+          );
 
         }
 
@@ -1355,22 +1761,32 @@
 
       monitors.delete(id);
 
+
       const card =
-        document.getElementById(`monitor-${id}`);
+        document.getElementById(
+          `monitor-${id}`
+        );
+
 
       if (card) {
 
-        card.style.opacity = "0";
+        card.style.opacity =
+          "0";
+
         card.style.transform =
           "translateY(20px) scale(.95)";
 
-        setTimeout(() => {
 
-          card.remove();
+        setTimeout(
+          () => {
 
-          updateCount();
+            card.remove();
 
-        }, 250);
+            updateCount();
+
+          },
+          250
+        );
 
       } else {
 
@@ -1381,163 +1797,339 @@
     }
 
 
-    async function fetchProfile(id) {
+    /* =====================================================
+       CHECK PROFILE
+       ===================================================== */
 
-      const monitor = monitors.get(id);
+    async function fetchProfile(
+      id
+    ) {
+
+      const monitor =
+        monitors.get(id);
+
 
       const card =
-        document.getElementById(`monitor-${id}`);
+        document.getElementById(
+          `monitor-${id}`
+        );
 
-      if (!monitor || !card) return;
+
+      if (
+        !monitor ||
+        !card
+      ) {
+        return;
+      }
 
 
       const input =
-        card.querySelector(".username-input-field");
+        card.querySelector(
+          ".username-input-field"
+        );
+
 
       const username =
-        input.value.trim().replace(/^@/, "");
+        input.value
+          .trim()
+          .replace(
+            /^@/,
+            ""
+          );
 
 
       if (!username) {
 
-        alert("Enter Instagram username");
+        alert(
+          "Enter Instagram username"
+        );
 
         return;
 
       }
 
 
-      monitor.username = username;
+      monitor.username =
+        username;
 
 
-      card.querySelector(".monitor-title")
-        .textContent = `@${username}`;
+      card
+        .querySelector(
+          ".monitor-title"
+        )
+        .textContent =
+        `@${username}`;
 
 
       const button =
-        card.querySelector(".check-btn");
+        card.querySelector(
+          ".check-btn"
+        );
+
 
       const originalHTML =
         button.innerHTML;
 
-      button.innerHTML =
-        `<i class="fa-solid fa-spinner fa-spin mr-2"></i>CHECKING`;
 
-      button.disabled = true;
+      button.innerHTML = `
+        <i
+          class="
+            fa-solid
+            fa-spinner
+            fa-spin
+            mr-2
+          "
+        ></i>
+        CHECKING
+      `;
+
+
+      button.disabled =
+        true;
+
+
+      /* Console */
+
+      console.log(
+        `[CHECK] Checking @${username}...`
+      );
 
 
       try {
 
         const response =
-          await fetch("/api/check", {
+          await fetch(
+            "/api/check",
+            {
+              method: "POST",
 
-            method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
 
-            headers: {
-              "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-              username
-            })
-
-          });
+              body:
+                JSON.stringify({
+                  username
+                })
+            }
+          );
 
 
         const data =
           await response.json();
 
 
+        console.log(
+          `[CHECK] @${username} response:`,
+          data
+        );
+
+
         if (data) {
 
           const profileSection =
-            card.querySelector(".profile-section");
+            card.querySelector(
+              ".profile-section"
+            );
 
-          if (data.profile_pic) {
+
+          /* PROFILE PICTURE */
+
+          if (
+            data.profile_pic
+          ) {
 
             const image =
-              card.querySelector(".profile-pic");
+              card.querySelector(
+                ".profile-pic"
+              );
+
 
             image.src =
               data.profile_pic;
 
-            profileSection.classList.remove("hidden");
+
+            profileSection
+              .classList
+              .remove(
+                "hidden"
+              );
 
           }
 
 
-          card.querySelector(".profile-name")
+          /* FULL NAME */
+
+          card
+            .querySelector(
+              ".profile-name"
+            )
             .textContent =
-            data.full_name || "-";
+            data.full_name ||
+            "-";
 
 
-          card.querySelector(".profile-username")
+          /* USERNAME */
+
+          card
+            .querySelector(
+              ".profile-username"
+            )
             .textContent =
             data.username
               ? `@${data.username}`
               : `@${username}`;
 
 
-          card.querySelector(".profile-bio")
+          /* BIO */
+
+          card
+            .querySelector(
+              ".profile-bio"
+            )
             .textContent =
-            data.bio || "-";
+            data.bio ||
+            "-";
 
 
-          card.querySelector(".profile-followers")
+          /* FOLLOWERS */
+
+          card
+            .querySelector(
+              ".profile-followers"
+            )
             .textContent =
-            data.followers ?? 0;
+            data.followers ??
+            0;
 
 
-          card.querySelector(".profile-following")
+          /* FOLLOWING */
+
+          card
+            .querySelector(
+              ".profile-following"
+            )
             .textContent =
-            data.following ?? 0;
+            data.following ??
+            0;
 
 
-          card.querySelector(".profile-posts")
+          /* POSTS */
+
+          card
+            .querySelector(
+              ".profile-posts"
+            )
             .textContent =
-            data.posts ?? 0;
+            data.posts ??
+            0;
+
+
+          /* STATUS */
+
+          const status =
+            data.status ||
+            (
+              data.exists
+                ? "ACTIVE"
+                : "BANNED"
+            );
 
 
           setStatus(
             id,
-            data.status ||
-            (data.exists ? "ACTIVE" : "BANNED")
+            status
+          );
+
+
+          console.log(
+            `[CHECK] @${username} -> ${status}`
           );
 
         }
 
       } catch (error) {
 
-        console.error(error);
+        console.error(
+          `[CHECK ERROR] @${username}:`,
+          error
+        );
 
-        setStatus(id, "UNKNOWN");
+
+        setStatus(
+          id,
+          "UNKNOWN"
+        );
 
       } finally {
 
-        button.innerHTML = originalHTML;
+        button.innerHTML =
+          originalHTML;
 
-        button.disabled = false;
+        button.disabled =
+          false;
 
       }
 
     }
 
 
-    function setStatus(id, status) {
+    /* =====================================================
+       SET STATUS
+       ===================================================== */
 
-      const monitor = monitors.get(id);
+    function setStatus(
+      id,
+      status
+    ) {
+
+      const monitor =
+        monitors.get(id);
+
 
       const card =
-        document.getElementById(`monitor-${id}`);
+        document.getElementById(
+          `monitor-${id}`
+        );
 
-      if (!monitor || !card) return;
+
+      if (
+        !monitor ||
+        !card
+      ) {
+        return;
+      }
 
 
       status =
-        String(status || "UNKNOWN").toUpperCase();
+        String(
+          status ||
+          "UNKNOWN"
+        ).toUpperCase();
 
 
-      monitor.lastStatus = status;
+      const previousStatus =
+        monitor.lastStatus;
+
+
+      monitor.lastStatus =
+        status;
+
+
+      /* Console status change */
+
+      if (
+        previousStatus &&
+        previousStatus !== "UNKNOWN" &&
+        previousStatus !== status
+      ) {
+
+        console.log(
+          `🔔 @${monitor.username} STATUS CHANGED: ${previousStatus} → ${status}`
+        );
+
+      }
 
 
       const badges =
@@ -1546,76 +2138,116 @@
         );
 
 
-      badges.forEach((badge) => {
+      badges.forEach(
+        (badge) => {
 
-        badge.classList.remove(
-          "status-active",
-          "status-banned",
-          "status-unknown"
-        );
-
-
-        if (status === "ACTIVE") {
-
-          badge.classList.add(
-            "status-active"
-          );
-
-        } else if (status === "BANNED") {
-
-          badge.classList.add(
-            "status-banned"
-          );
-
-        } else {
-
-          badge.classList.add(
+          badge.classList.remove(
+            "status-active",
+            "status-banned",
             "status-unknown"
           );
 
-        }
+
+          if (
+            status === "ACTIVE"
+          ) {
+
+            badge.classList.add(
+              "status-active"
+            );
+
+          } else if (
+            status === "BANNED"
+          ) {
+
+            badge.classList.add(
+              "status-banned"
+            );
+
+          } else {
+
+            badge.classList.add(
+              "status-unknown"
+            );
+
+          }
 
 
-        badge.innerHTML = `
-          <span
-            class="w-1.5 h-1.5 rounded-full ${
-              status === "ACTIVE"
-                ? "bg-green-400"
-                : status === "BANNED"
+          const dotClass =
+            status === "ACTIVE"
+              ? "bg-green-400"
+              : status === "BANNED"
                 ? "bg-red-400"
-                : "bg-purple-400"
-            }"
-          ></span>
+                : "bg-purple-400";
 
-          ${escapeHtml(status)}
-        `;
 
-      });
+          badge.innerHTML = `
+
+            <span
+              class="
+                w-1.5
+                h-1.5
+                rounded-full
+                ${dotClass}
+              "
+            ></span>
+
+            ${escapeHtml(status)}
+
+          `;
+
+        }
+      );
 
     }
 
 
-    async function toggleMonitor(id) {
+    /* =====================================================
+       START / STOP MONITOR
+       ===================================================== */
+
+    async function toggleMonitor(
+      id
+    ) {
 
       const monitor =
         monitors.get(id);
 
-      const card =
-        document.getElementById(`monitor-${id}`);
 
-      if (!monitor || !card) return;
+      const card =
+        document.getElementById(
+          `monitor-${id}`
+        );
+
+
+      if (
+        !monitor ||
+        !card
+      ) {
+        return;
+      }
 
 
       const input =
-        card.querySelector(".username-input-field");
+        card.querySelector(
+          ".username-input-field"
+        );
+
 
       const username =
-        input.value.trim().replace(/^@/, "");
+        input.value
+          .trim()
+          .replace(
+            /^@/,
+            ""
+          );
 
 
       if (!username) {
 
-        alert("Enter Instagram username first");
+        alert(
+          "Enter Instagram username first"
+        );
 
         return;
 
@@ -1623,12 +2255,25 @@
 
 
       const button =
-        card.querySelector(".monitor-toggle-btn");
+        card.querySelector(
+          ".monitor-toggle-btn"
+        );
 
 
       try {
 
-        if (!monitor.monitoring) {
+        /* ==============================
+           START
+           ============================== */
+
+        if (
+          !monitor.monitoring
+        ) {
+
+          console.log(
+            `[MONITOR] Starting @${username}`
+          );
+
 
           const response =
             await fetch(
@@ -1637,12 +2282,14 @@
                 method: "POST",
 
                 headers: {
-                  "Content-Type": "application/json"
+                  "Content-Type":
+                    "application/json"
                 },
 
-                body: JSON.stringify({
-                  username
-                })
+                body:
+                  JSON.stringify({
+                    username
+                  })
               }
             );
 
@@ -1654,22 +2301,35 @@
           if (!response.ok) {
 
             throw new Error(
-              data.error || "Failed to start monitor"
+              data.error ||
+              "Failed to start monitor"
             );
 
           }
 
 
-          monitor.username = username;
+          monitor.username =
+            username;
 
-          monitor.monitoring = true;
+
+          monitor.monitoring =
+            true;
+
 
           monitor.startedAt =
-            data.startedAt || Date.now();
+            data.startedAt ||
+            Date.now();
 
 
           button.innerHTML = `
-            <i class="fa-solid fa-stop mr-2"></i>
+            <i
+              class="
+                fa-solid
+                fa-stop
+                mr-2
+              "
+            ></i>
+
             STOP MONITOR
           `;
 
@@ -1682,7 +2342,23 @@
           );
 
 
-        } else {
+          console.log(
+            `[MONITOR] @${username} monitoring started`
+          );
+
+
+        }
+
+        /* ==============================
+           STOP
+           ============================== */
+
+        else {
+
+          console.log(
+            `[MONITOR] Stopping @${monitor.username}`
+          );
+
 
           const response =
             await fetch(
@@ -1691,13 +2367,15 @@
                 method: "POST",
 
                 headers: {
-                  "Content-Type": "application/json"
+                  "Content-Type":
+                    "application/json"
                 },
 
-                body: JSON.stringify({
-                  username:
-                    monitor.username
-                })
+                body:
+                  JSON.stringify({
+                    username:
+                      monitor.username
+                  })
               }
             );
 
@@ -1709,41 +2387,69 @@
           if (!response.ok) {
 
             throw new Error(
-              data.error || "Failed to stop monitor"
+              data.error ||
+              "Failed to stop monitor"
             );
 
           }
 
 
-          monitor.monitoring = false;
+          monitor.monitoring =
+            false;
+
 
           button.innerHTML = `
-            <i class="fa-solid fa-play mr-2"></i>
+            <i
+              class="
+                fa-solid
+                fa-play
+                mr-2
+              "
+            ></i>
+
             START MONITOR
           `;
+
+
+          console.log(
+            `[MONITOR] @${monitor.username} monitoring stopped`
+          );
 
         }
 
 
         updateCount();
 
+
       } catch (error) {
 
-        console.error(error);
+        console.error(
+          "[MONITOR ERROR]",
+          error
+        );
 
-        alert(error.message);
+
+        alert(
+          error.message
+        );
 
       }
 
     }
 
 
+    /* =====================================================
+       RESTORE BACKEND MONITORS
+       ===================================================== */
+
     async function restoreBackendMonitors() {
 
       try {
 
         const response =
-          await fetch("/api/monitor/status");
+          await fetch(
+            "/api/monitor/status"
+          );
 
 
         if (!response.ok) {
@@ -1761,31 +2467,47 @@
             : data.monitors || [];
 
 
-        saved.forEach((item) => {
+        console.log(
+          "[MONITOR] Restoring backend monitors:",
+          saved
+        );
 
-          if (!item.username) return;
 
-          addMonitor({
+        saved.forEach(
+          (item) => {
 
-            username:
-              item.username,
+            if (
+              !item.username
+            ) {
+              return;
+            }
 
-            monitoring:
-              item.monitoring !== false,
 
-            startedAt:
-              item.startedAt,
+            addMonitor({
 
-            lastStatus:
-              item.lastStatus,
+              username:
+                item.username,
 
-            elapsedSeconds:
-              item.elapsedSeconds || 0
+              monitoring:
+                item.monitoring !== false,
 
-          });
+              startedAt:
+                item.startedAt,
 
-        });
+              lastStatus:
+                item.lastStatus,
 
+              elapsedSeconds:
+                item.elapsedSeconds ||
+                0
+
+            });
+
+          }
+        );
+
+
+        /* Minimize restored cards */
 
         const cards =
           document.querySelectorAll(
@@ -1793,53 +2515,92 @@
           );
 
 
-        cards.forEach((card) => {
-          card.classList.add("minimized");
-        });
+        cards.forEach(
+          (card) => {
+
+            card.classList.add(
+              "minimized"
+            );
+
+          }
+        );
 
 
-        if (cards.length) {
-          cards[cards.length - 1]
-            .classList.remove("minimized");
+        /* Open last card */
+
+        if (
+          cards.length
+        ) {
+
+          cards[
+            cards.length - 1
+          ].classList.remove(
+            "minimized"
+          );
+
         }
 
 
-        monitors.forEach((monitor, id) => {
+        /* Restore buttons */
 
-          const card =
-            document.getElementById(
-              `monitor-${id}`
-            );
+        monitors.forEach(
+          (monitor, id) => {
 
-          if (!card) return;
-
-
-          const button =
-            card.querySelector(
-              ".monitor-toggle-btn"
-            );
+            const card =
+              document.getElementById(
+                `monitor-${id}`
+              );
 
 
-          if (monitor.monitoring) {
+            if (!card) {
+              return;
+            }
 
-            button.innerHTML = `
-              <i class="fa-solid fa-stop mr-2"></i>
-              STOP MONITOR
-            `;
 
-          } else {
+            const button =
+              card.querySelector(
+                ".monitor-toggle-btn"
+              );
 
-            button.innerHTML = `
-              <i class="fa-solid fa-play mr-2"></i>
-              START MONITOR
-            `;
+
+            if (
+              monitor.monitoring
+            ) {
+
+              button.innerHTML = `
+                <i
+                  class="
+                    fa-solid
+                    fa-stop
+                    mr-2
+                  "
+                ></i>
+
+                STOP MONITOR
+              `;
+
+            } else {
+
+              button.innerHTML = `
+                <i
+                  class="
+                    fa-solid
+                    fa-play
+                    mr-2
+                  "
+                ></i>
+
+                START MONITOR
+              `;
+
+            }
 
           }
-
-        });
+        );
 
 
         updateCount();
+
 
       } catch (error) {
 
@@ -1853,15 +2614,23 @@
     }
 
 
+    /* =====================================================
+       UPDATE TIMERS + BACKEND STATUS
+       ===================================================== */
+
     async function updateTimers() {
 
       try {
 
         const response =
-          await fetch("/api/monitor/status");
+          await fetch(
+            "/api/monitor/status"
+          );
 
 
-        if (!response.ok) return;
+        if (!response.ok) {
+          return;
+        }
 
 
         const data =
@@ -1885,83 +2654,113 @@
           );
 
 
-        monitors.forEach((monitor, id) => {
+        monitors.forEach(
+          (monitor, id) => {
 
-          if (!monitor.username) return;
+            if (
+              !monitor.username
+            ) {
+              return;
+            }
 
 
-          const backend =
-            backendMap.get(
-              monitor.username
-            );
-
-
-          if (backend) {
-
-            monitor.monitoring =
-              backend.monitoring;
-
-            monitor.elapsedSeconds =
-              backend.elapsedSeconds || 0;
-
-            monitor.startedAt =
-              backend.startedAt ||
-              monitor.startedAt;
-
-            if (backend.lastStatus) {
-
-              setStatus(
-                id,
-                backend.lastStatus
+            const backend =
+              backendMap.get(
+                monitor.username
               );
+
+
+            if (backend) {
+
+              monitor.monitoring =
+                backend.monitoring;
+
+
+              monitor.elapsedSeconds =
+                backend.elapsedSeconds ||
+                0;
+
+
+              monitor.startedAt =
+                backend.startedAt ||
+                monitor.startedAt;
+
+
+              if (
+                backend.lastStatus
+              ) {
+
+                setStatus(
+                  id,
+                  backend.lastStatus
+                );
+
+              }
+
+            }
+
+
+            const card =
+              document.getElementById(
+                `monitor-${id}`
+              );
+
+
+            if (!card) {
+              return;
+            }
+
+
+            const elapsed =
+              monitor.elapsedSeconds ||
+              0;
+
+
+            const timerText =
+              formatElapsed(
+                elapsed
+              );
+
+
+            /* Header timer */
+
+            const timer =
+              card.querySelector(
+                ".timer"
+              );
+
+
+            if (timer) {
+
+              timer.textContent =
+                timerText;
+
+            }
+
+
+            /* Monitoring timer */
+
+            const monitoringTime =
+              card.querySelector(
+                ".monitoring-time"
+              );
+
+
+            if (
+              monitoringTime
+            ) {
+
+              monitoringTime.textContent =
+                timerText;
 
             }
 
           }
-
-
-          const card =
-            document.getElementById(
-              `monitor-${id}`
-            );
-
-
-          if (!card) return;
-
-
-          const elapsed =
-            monitor.elapsedSeconds || 0;
-
-
-          const timerText =
-            formatElapsed(elapsed);
-
-
-          const timer =
-            card.querySelector(".timer");
-
-
-          if (timer) {
-            timer.textContent =
-              timerText;
-          }
-
-
-          const monitoringTime =
-            card.querySelector(
-              ".monitoring-time"
-            );
-
-
-          if (monitoringTime) {
-            monitoringTime.textContent =
-              timerText;
-          }
-
-        });
+        );
 
 
         updateCount();
+
 
       } catch (error) {
 
@@ -1975,26 +2774,32 @@
     }
 
 
-    /* =========================================================
-       STARTUP
-       ========================================================= */
+    /* =====================================================
+       START APPLICATION
+       ===================================================== */
 
     document.addEventListener(
       "DOMContentLoaded",
       () => {
 
         document
-          .getElementById("add-monitor-btn")
+          .getElementById(
+            "add-monitor-btn"
+          )
           .addEventListener(
             "click",
-            () => addMonitor()
+            () => {
+              addMonitor();
+            }
           );
 
+
+        /* Restore backend monitors */
 
         restoreBackendMonitors();
 
 
-        /* Backend is authoritative */
+        /* Update every second */
 
         setInterval(
           updateTimers,
@@ -2008,3 +2813,4 @@
 
 </body>
 </html>
+```
